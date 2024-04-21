@@ -1,0 +1,106 @@
+{
+  "bear": {
+      "type": "bear",
+      "weight": 500,
+      "velocity": 2,
+      "limit": 5,
+      "hunger": 80
+
+  },
+  "caterpillar": {
+      "type": "caterpillar",
+      "weight": 0.01,
+      "velocity": 0,
+      "limit": 1000,
+      "hunger": 0
+
+  },
+  "deer": {
+      "type": "deer",
+      "weight": 300,
+      "velocity": 4,
+      "limit": 20,
+      "hunger": 50
+
+  },
+  "duck": {
+      "type": "duck",
+      "weight": 1,
+      "velocity": 4,
+      "limit": 200,
+      "hunger": 0.15
+
+  },
+  "eagle": {
+      "type": "eagle",
+      "weight": 6,
+      "velocity": 3,
+      "limit": 20,
+      "hunger": 1
+
+  },
+  "fox": {
+      "type": "fox",
+      "weight": 8,
+      "velocity": 2,
+      "limit": 30,
+      "hunger": 2
+
+  },
+  "grass": {
+      "type": "grass",
+      "weight": 1,
+      "velocity": null,
+      "limit": 200,
+      "hunger": null
+
+  },
+  "horse": {
+     "type": "horse",
+      "weight": 400,
+      "velocity": 4,
+      "limit": 20,
+      "hunger": 60
+
+  },
+  "mouse": {
+     "type": "mouse",
+      "weight": 0.05,
+      "velocity": 1,
+      "limit": 500,
+      "hunger": 0.01
+
+  },
+  "rabbit": {
+      "type": "rabbit",
+      "weight": 2,
+      "velocity": 2,
+      "limit": 150,
+      "hunger": 0.45
+
+  },
+  "sheep": {
+      "type": "sheep",
+      "weight": 70,
+      "velocity": 3,
+      "limit": 140,
+      "hunger": 15
+
+  },
+  "snake": {
+      "type": "snake",
+      "weight": 15,
+      "velocity": 1,
+      "limit": 30,
+      "hunger": 3
+
+  },
+  "wolf": {
+      "type": "wolf",
+      "weight": 50,
+      "velocity": 3,
+      "limit": 30,
+      "hunger": 8
+
+  }
+}
