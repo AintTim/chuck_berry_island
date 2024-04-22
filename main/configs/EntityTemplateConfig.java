@@ -6,6 +6,7 @@ import constants.EntityType;
 import entities.Entity;
 import handlers.ParsingHandler;
 import lombok.Getter;
+import services.Creator;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Getter
 public class EntityTemplateConfig {
 
-    private final Map<EntityType, Entity> templates;
+    private final Map<EntityType, Creator<? extends Entity>> templates;
 
     public EntityTemplateConfig(Path path, ObjectMapper mapper) {
         templates = ParsingHandler.getObjectFromJson(path, new TypeReference<>(){}, mapper);
