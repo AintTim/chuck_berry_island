@@ -2,10 +2,10 @@ package entities.herbivores;
 
 import entities.Entity;
 import lombok.NoArgsConstructor;
-import services.Creator;
+import services.CreatorService;
 
 @NoArgsConstructor
-public class Mouse extends Herbivore implements Creator<Mouse> {
+public class Mouse extends Herbivore implements CreatorService<Mouse> {
     public Mouse(Double weight, Integer velocity, Integer limit, Double hunger) {
         super(weight, velocity, limit, hunger);
     }

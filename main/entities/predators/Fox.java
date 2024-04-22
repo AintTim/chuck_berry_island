@@ -2,10 +2,10 @@ package entities.predators;
 
 import entities.Entity;
 import lombok.NoArgsConstructor;
-import services.Creator;
+import services.CreatorService;
 
 @NoArgsConstructor
-public class Fox extends Predator implements Creator<Fox> {
+public class Fox extends Predator implements CreatorService<Fox> {
     public Fox(Double weight, Integer velocity, Integer limit, Double hunger) {
         super(weight, velocity, limit, hunger);
     }

@@ -2,10 +2,10 @@ package entities.plants;
 
 import entities.Entity;
 import lombok.NoArgsConstructor;
-import services.Creator;
+import services.CreatorService;
 
 @NoArgsConstructor
-public class Grass extends Plant implements Creator<Grass> {
+public class Grass extends Plant implements CreatorService<Grass> {
     public Grass(Double weight, Integer velocity, Integer limit, Double hunger) {
         super(weight, velocity, limit, hunger);
     }

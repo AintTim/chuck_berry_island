@@ -26,6 +26,6 @@ import entities.predators.*;
         @JsonSubTypes.Type(value = Wolf.class, name = "wolf"),
 })
 @FunctionalInterface
-public interface Creator<T extends Entity> {
+public interface CreatorService<T extends Entity> {
     T create(Entity entity);
 }

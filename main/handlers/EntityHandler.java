@@ -3,7 +3,7 @@ package handlers;
 import configs.EntityTemplateConfig;
 import constants.EntityType;
 import entities.Entity;
-import services.Creator;
+import services.CreatorService;
 
 public class EntityHandler {
     private final EntityTemplateConfig entityConfig;
@@ -13,7 +13,7 @@ public class EntityHandler {
     }
 
     public Entity createEntity(EntityType type) {
-        Creator<? extends Entity> template = entityConfig.getTemplates().get(type);
+        CreatorService<? extends Entity> template = entityConfig.getTemplates().get(type);
         return template.create((Entity) template);
     }
 }

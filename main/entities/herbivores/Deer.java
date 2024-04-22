@@ -1,12 +1,11 @@
 package entities.herbivores;
 
-import entities.Animal;
 import entities.Entity;
 import lombok.NoArgsConstructor;
-import services.Creator;
+import services.CreatorService;
 
 @NoArgsConstructor
-public class Deer extends Herbivore implements Creator<Deer> {
+public class Deer extends Herbivore implements CreatorService<Deer> {
     public Deer(Double weight, Integer velocity, Integer limit, Double hunger) {
         super(weight, velocity, limit, hunger);
     }
