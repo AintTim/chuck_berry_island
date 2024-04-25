@@ -10,6 +10,5 @@ public interface LivingBeing {
 
     void eat(Entity entity);
     void breed(LivingBeing animal);
-    void move();
     Direction chooseRoute(ThreadLocalRandom random, List<Direction> directions);
 }

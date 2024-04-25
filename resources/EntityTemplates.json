@@ -37,7 +37,6 @@
       "velocity": 3,
       "limit": 20,
       "hunger": 1
-
   },
   "fox": {
       "type": "fox",

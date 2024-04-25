@@ -18,6 +18,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class Animal extends Entity implements LivingBeing, CreatorService<Animal, Animal> {
     @Setter
     protected boolean isActionDone;
+    @Setter
+    protected boolean hasOffspring;
+    @Setter
     protected Action action;
     protected int health;
     protected Animal(Double weight, Integer velocity, Integer limit, Double hunger) {
@@ -25,6 +28,7 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
         this.action = Action.IDLE;
         this.health = 100;
         this.isRemovable = false;
+        this.hasOffspring = false;
     }
 
     protected Animal(Double weight, Integer velocity, Integer limit, Double hunger, boolean isActionDone, Action action, int health) {
@@ -42,12 +46,6 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     @Override
     public void breed(LivingBeing animal) {
 
-    }
-
-    @Override
-    public void move() {
-        this.isActionDone = true;
-        this.action = Action.IDLE;
     }
 
     @Override

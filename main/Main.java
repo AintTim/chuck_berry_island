@@ -3,17 +3,21 @@ import configs.EatingProbabilityConfig;
 import configs.EntityConfig;
 import configs.EntityTemplateConfig;
 import configs.IslandConfig;
+import constants.Action;
 import constants.EntityType;
 import entities.Animal;
 import entities.Entity;
 import entities.Field;
 import entities.Island;
 import entities.predators.Wolf;
+import handlers.EntityActionHandler;
 import handlers.EntityCreationHandler;
 import handlers.EntityMovementHandler;
 import handlers.PropertiesHandler;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
@@ -27,20 +31,26 @@ public class Main {
         EntityConfig entityConfig = new EntityConfig(eatingProbabilityConfig, templateConfig);
         IslandConfig config = new IslandConfig(propertiesHandler.getProperties());
 
-
         EntityCreationHandler creator = new EntityCreationHandler(entityConfig);
         Island island = new Island(config);
-        EntityMovementHandler movementManager = new EntityMovementHandler(island, templateConfig);
-        creator.fillIslandWithRandomEntities(island, ThreadLocalRandom.current());
-        Field start = new Field(0, 0);
-        int count = 0;
-        for (Entity wolf : island.getFields().get(start).get(EntityType.WOLF)) {
-            island.moveAnimal(start, wolf, movementManager::moveEntity);
-            count++;
-        }
-        System.out.println(count + " волков было перемещено");
+        EntityActionHandler actionManager = new EntityActionHandler(island);
+        EntityMovementHandler movementManager = new EntityMovementHandler(island);
 
-        island.resetEntities(entity -> entity instanceof Wolf animal && animal.getIsRemovable());
+        //Заполнение острова сущностями (животные + растения)
+        creator.fillIslandWithRandomEntities(island, ThreadLocalRandom.current());
+
+        //Выбор действия на раунд
+        actionManager.prepareEntities();
+
+        //Перемещение сущности
+        island.moveAnimals(movementManager::moveEntity);
+
+
+        //Заполнение растениями
+//        island.refillPlants(entityConfig.getTemplate(EntityType.GRASS), diff -> creator.createEntities(EntityType.GRASS, new Random().nextInt(diff)));
+
+        //Удаление сущностей по условию
+        island.resetEntities(Entity::getIsRemovable);
         System.out.println("Wolves removed");
     }
 }

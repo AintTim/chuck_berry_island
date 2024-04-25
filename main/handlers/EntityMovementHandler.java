@@ -17,22 +17,17 @@ import java.util.function.Predicate;
 
 public class EntityMovementHandler {
     private final Map<Field, EnumMap<EntityType, List<Entity>>> fields;
-    private final EntityTemplateConfig templateConfig;
 
-    public EntityMovementHandler(Island island, EntityTemplateConfig templateConfig) {
+    public EntityMovementHandler(Island island) {
         this.fields = island.getFields();
-        this.templateConfig = templateConfig;
     }
 
     public Field moveEntity(Animal entity) {
         Field current = locateEntity(entity);
-        System.out.printf("%s:%s moved from (%s)%n", entity,entity.hashCode(), current);
         for (int move = 0; move < entity.getVelocity(); move++) {
             List<Direction> possibleDirections = definePossibleDirections(current, entity);
             current = move(current, entity, possibleDirections);
         }
-        System.out.printf("%s:%s moved to (%s)%n", entity,entity.hashCode(), current);
-        System.out.println("_____________________________________");
         return current;
     }
 
@@ -57,7 +52,7 @@ public class EntityMovementHandler {
         Predicate<Field> isWithinBoundaries = fields::containsKey;
         Predicate<Field> isWithinNumberLimitation = field -> {
             EntityType type = EntityType.ofClass(entity.getClass());
-            return fields.get(field).get(type).size() < entity.getLimit();
+            return fields.get(field).get(type).stream().filter(animal -> !animal.getIsRemovable()).count() < entity.getLimit();
         };
         return Arrays.stream(Direction.values())
                 .filter(direction -> directionValidation(location, direction, isWithinBoundaries))

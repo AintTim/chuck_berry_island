@@ -15,5 +15,5 @@ public interface ManageEntityService {
 
     void refillPlants(Entity plant, IntFunction<List<Entity>> createPlant);
 
-    void moveAnimal(Field start, Entity entity, Function<Animal, Field> relocate);
+    void moveAnimals(Function<Animal, Field> relocate);
 }

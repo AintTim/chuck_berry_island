@@ -1,6 +1,7 @@
 package entities;
 
 import configs.IslandConfig;
+import constants.Action;
 import constants.EntityType;
 import entities.plants.Plant;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class Island implements ManageEntityService {
         }
     }
 
-    //убрать мертвых животных
+    //убрать мертвых животных - Статистика по умершим животным
     @Override
     public void resetEntities(Predicate<Entity> condition) {
         fields.values().stream().flatMap(map -> map.values().stream())
@@ -46,22 +47,27 @@ public class Island implements ManageEntityService {
     }
 
     @Override
-    public void moveAnimal(Field start, Entity entity, Function<Animal, Field> relocate) {
-        if (entity instanceof Animal animal) {
-            Field destination = relocate.apply(animal);
-            if (!start.equals(destination)) {
-                getEntity(start, animal).setIsRemovable(true);
-                animal.move();
-                fields.get(destination).get(EntityType.ofClass(animal.getClass())).add(animal.copy(animal));
-            }
+    public void moveAnimals(Function<Animal, Field> relocate) {
+        for (var field : fields.entrySet()) {
+            field.getValue().values().stream()
+                    .flatMap(Collection::stream)
+                    .filter(Animal.class::isInstance)
+                    .map(Animal.class::cast)
+                    .filter(animal -> Action.MOVE.equals(animal.getAction()))
+                    .forEach(animal -> moveAnimal(field.getKey(), animal, relocate));
         }
     }
 
-    private Entity getEntity(Field location, Entity entity) {
-        EntityType type = EntityType.ofClass(entity.getClass());
-        return fields.get(location).get(type).stream()
-                .filter(entity::equals)
-                .findFirst().orElseThrow(() -> new NoSuchElementException("Искомая сущность не существует"));
+    private void moveAnimal(Field start, Animal animal, Function<Animal, Field> relocate) {
+        Field destination = relocate.apply(animal);
+        animal.setActionDone(true);
+        animal.setAction(Action.IDLE);
+        if (!start.equals(destination)) {
+            var copy = animal.copy(animal);
+            animal.setIsRemovable(true);
+            fields.get(destination).get(EntityType.ofClass(animal.getClass())).add(copy);
+        }
+        System.out.printf("%s-%d переместился из %s в %s%n", animal.getClass().getSimpleName(), animal.getId(), start, destination);
     }
 
     private void fillWithRandomNumberOfPlants(Entity plant, IntFunction<List<Entity>> createPlant, EnumMap<EntityType, List<Entity>> map) {
@@ -74,10 +80,5 @@ public class Island implements ManageEntityService {
                 plants.addAll(createPlant.apply(difference));
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }
