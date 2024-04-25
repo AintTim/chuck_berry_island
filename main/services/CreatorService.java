@@ -25,7 +25,8 @@ import entities.predators.*;
         @JsonSubTypes.Type(value = Snake.class, name = "snake"),
         @JsonSubTypes.Type(value = Wolf.class, name = "wolf"),
 })
-@FunctionalInterface
-public interface CreatorService<T extends Entity> {
-    T create(Entity entity);
+
+public interface CreatorService<T extends Entity, R extends Entity> {
+    R create(T entity);
+    R copy(T entity);
 }

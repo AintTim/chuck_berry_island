@@ -14,7 +14,7 @@ import java.util.Map;
 @Getter
 public class EntityTemplateConfig {
 
-    private final Map<EntityType, CreatorService<? extends Entity>> templates;
+    private final Map<EntityType, CreatorService<Entity, Entity>> templates;
 
     public EntityTemplateConfig(Path path, ObjectMapper mapper) {
         templates = ParsingHandler.getObjectFromJson(path, new TypeReference<>(){}, mapper);

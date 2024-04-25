@@ -15,7 +15,7 @@ public class EntityConfig {
         this.entityTemplate = entityTemplate;
     }
 
-    public Map<EntityType, CreatorService<? extends Entity>> getTemplates() {
+    public Map<EntityType, CreatorService<Entity, Entity>> getTemplates() {
         return entityTemplate.getTemplates();
     }
 
