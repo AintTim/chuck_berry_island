@@ -4,14 +4,17 @@ import configs.EntityConfig;
 import configs.EntityTemplateConfig;
 import configs.IslandConfig;
 import constants.EntityType;
+import entities.Animal;
 import entities.Entity;
+import entities.Field;
 import entities.Island;
 import entities.predators.Wolf;
 import handlers.EntityCreationHandler;
+import handlers.EntityMovementHandler;
 import handlers.PropertiesHandler;
 
 import java.nio.file.Path;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
     public static void main(String[] args) {
@@ -27,8 +30,17 @@ public class Main {
 
         EntityCreationHandler creator = new EntityCreationHandler(entityConfig);
         Island island = new Island(config);
-        island.refillPlants(entityConfig.getTemplate(EntityType.GRASS), diff -> creator.createEntities(EntityType.GRASS, new Random().nextInt(diff)));
+        EntityMovementHandler movementManager = new EntityMovementHandler(island, templateConfig);
+        creator.fillIslandWithRandomEntities(island, ThreadLocalRandom.current());
+        Field start = new Field(0, 0);
+        int count = 0;
+        for (Entity wolf : island.getFields().get(start).get(EntityType.WOLF)) {
+            island.moveAnimal(start, wolf, movementManager::moveEntity);
+            count++;
+        }
+        System.out.println(count + " волков было перемещено");
 
-        System.out.println("Hello");
+        island.resetEntities(entity -> entity instanceof Wolf animal && animal.getIsRemovable());
+        System.out.println("Wolves removed");
     }
 }
