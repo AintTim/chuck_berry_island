@@ -23,11 +23,13 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     @Setter
     protected Action action;
     protected int health;
+    protected Double saturation;
     protected Animal(Double weight, Integer velocity, Integer limit, Double hunger) {
         super(weight, velocity, limit, hunger);
         this.action = Action.IDLE;
         this.health = 100;
-        this.isRemovable = false;
+        this.saturation = hunger;
+        this.removable = false;
         this.hasOffspring = false;
     }
 
@@ -39,8 +41,33 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     }
 
     @Override
-    public void eat(Entity entity) {
+    public void eat(Entity entity, Integer increase) {
+        saturation = (entity.getWeight() > (hunger - saturation))
+                ? hunger
+                : saturation + entity.getWeight();
+        if (saturation.equals(hunger)) {
+            health += increase;
+            if (health > 100) {
+                health = 100;
+            }
+        }
+        //TODO: Нужно ли добавлять статус, если сразу удаляю?
+        entity.setRemovable(true);
+    }
 
+    @Override
+    public void starve(Integer decrease) {
+        if (!saturation.equals(hunger)) {
+            health -= decrease;
+            if (health < 0) {
+                removable = true;
+            }
+        } else {
+            saturation -= saturation / 4;
+            if (saturation < 0) {
+                saturation = 0.0;
+            }
+        }
     }
 
     @Override

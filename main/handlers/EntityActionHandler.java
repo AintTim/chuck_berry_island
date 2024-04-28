@@ -1,25 +1,26 @@
 package handlers;
 
+import configs.EntityConfig;
 import constants.Action;
 import constants.EntityType;
 import entities.Animal;
 import entities.Entity;
 import entities.Field;
 import entities.Island;
+import entities.predators.Wolf;
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 public class EntityActionHandler {
 
     private final Map<Field, EnumMap<EntityType, List<Entity>>> fields;
+    private final EntityConfig config;
 
-    public EntityActionHandler(Island island) {
+    public EntityActionHandler(Island island, EntityConfig config) {
         this.fields = island.getFields();
+        this.config = config;
     }
 
     public void prepareEntities() {
@@ -32,16 +33,47 @@ public class EntityActionHandler {
 
     public void setRandomAction(Field field, Animal animal) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        Predicate<Animal> hasValidStatus = a -> Action.IDLE.equals(a.getAction()) || Action.BREED.equals(a.getAction());
+//        if (animal instanceof Wolf) {
+//            System.out.println("");
+//        }
 
-        if (animal.isHasOffspring() || getNeighbors(field, animal, hasValidStatus).isEmpty()) {
-            animal.setAction(Action.values()[random.nextInt(2)]);
+        if (canBreed(animal, field)) {
+            if (canEat(animal,field)) {
+                animal.setAction(Action.values()[random.nextInt(3)]);
+            } else {
+                animal.setAction(Action.values()[random.nextInt(1, 3)]);
+            }
         } else {
-            animal.setAction(Action.values()[random.nextInt(3)]);
+            if (canEat(animal, field)) {
+                animal.setAction(Action.values()[random.nextInt(2)]);
+            } else {
+                animal.setAction(Action.MOVE);
+            }
+        }
+        if (animal.getAction().equals(Action.EAT) && animal instanceof Wolf wolf) {
+            System.out.printf("%s-%d выбрал следующее действие: %s%n", wolf.getClass(), wolf.getId(), wolf.getAction());
         }
     }
 
-    private List<Animal> getNeighbors(Field field, Animal animal, Predicate<Animal> condition) {
+    private boolean canEat(Animal animal, Field field) {
+        return !animal.getSaturation().equals(animal.getHunger()) && !getEdibleNeighbors(field, animal).isEmpty();
+    }
+
+    private boolean canBreed(Animal animal, Field field) {
+        Predicate<Animal> hasValidStatus =
+                a -> Action.IDLE.equals(a.getAction()) || Action.BREED.equals(a.getAction());
+        return !animal.isHasOffspring() && !getBreedingNeighbors(field, animal, hasValidStatus).isEmpty();
+    }
+
+    private List<Entity> getEdibleNeighbors(Field location, Animal animal) {
+        var preys = config.getEatingProbability().getPreys(animal);
+        return fields.get(location).entrySet().stream()
+                .filter(field -> preys.contains(field.getKey()))
+                .flatMap(field -> field.getValue().stream())
+                .toList();
+    }
+
+    private List<Animal> getBreedingNeighbors(Field field, Animal animal, Predicate<Animal> condition) {
         EntityType type = EntityType.ofClass(animal.getClass());
         return fields.get(field).get(type).stream()
                 .map(Animal.class::cast)

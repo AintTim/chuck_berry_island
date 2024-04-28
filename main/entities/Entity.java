@@ -14,13 +14,13 @@ public abstract class Entity {
     protected Integer limit;
     protected Double hunger;
     @Setter
-    protected Boolean isRemovable;
+    protected Boolean removable;
 
     protected Entity(Double weight, Integer velocity, Integer limit, Double hunger) {
         this.weight = weight;
         this.velocity = velocity;
         this.limit = limit;
         this.hunger = hunger;
-        this.isRemovable = false;
+        this.removable = false;
     }
 }

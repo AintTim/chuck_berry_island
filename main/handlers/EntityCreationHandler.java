@@ -19,7 +19,7 @@ public class EntityCreationHandler {
     }
 
     public Entity createEntity(EntityType type) {
-        CreatorService<Entity, Entity> template = entityConfig.getTemplates().get(type);
+        CreatorService<Entity, Entity> template = entityConfig.getTemplate(type);
         return template.create((Entity) template);
     }
 
@@ -29,10 +29,10 @@ public class EntityCreationHandler {
                 .toList();
     }
 
-    public void fillIslandWithRandomEntities(Island island, ThreadLocalRandom random) {
+    public void fillIslandWithRandomEntities(Island island) {
         for (var field : island.getFields().entrySet()) {
             entityConfig.getTemplates().forEach((type, template) -> {
-                int number = random.nextInt(((Entity)template).getLimit());
+                int number = ThreadLocalRandom.current().nextInt(((Entity)template).getLimit());
                 field.getValue().put(type, new ArrayList<>(createEntities(type, number)));
             });
         }

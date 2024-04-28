@@ -8,7 +8,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public interface LivingBeing {
 
-    void eat(Entity entity);
+    void eat(Entity entity, Integer increase);
+    void starve(Integer decrease);
     void breed(LivingBeing animal);
     Direction chooseRoute(ThreadLocalRandom random, List<Direction> directions);
 }

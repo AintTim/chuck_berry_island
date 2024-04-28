@@ -1,6 +1,5 @@
 package handlers;
 
-import configs.EntityTemplateConfig;
 import constants.Direction;
 import constants.EntityType;
 import entities.Animal;
@@ -9,21 +8,19 @@ import entities.Field;
 import entities.Island;
 
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 public class EntityMovementHandler {
-    private final Map<Field, EnumMap<EntityType, List<Entity>>> fields;
+    private final Island island;
 
     public EntityMovementHandler(Island island) {
-        this.fields = island.getFields();
+        this.island = island;
     }
 
     public Field moveEntity(Animal entity) {
-        Field current = locateEntity(entity);
+        Field current = island.locateEntity(entity);
         for (int move = 0; move < entity.getVelocity(); move++) {
             List<Direction> possibleDirections = definePossibleDirections(current, entity);
             current = move(current, entity, possibleDirections);
@@ -37,22 +34,11 @@ public class EntityMovementHandler {
                 : getFieldByDirection(start, animal.chooseRoute(ThreadLocalRandom.current(), directions));
     }
 
-    private Field locateEntity(Entity entity) {
-        for (var field : fields.entrySet()) {
-            var fieldMap = field.getValue();
-            var entities = fieldMap.get(EntityType.ofClass(entity.getClass()));
-            if (entities.contains(entity)) {
-                return field.getKey();
-            }
-        }
-        throw new IllegalArgumentException("Искомая сущность отсутствует на острове");
-    }
-
     private List<Direction> definePossibleDirections(Field location, Entity entity) {
-        Predicate<Field> isWithinBoundaries = fields::containsKey;
+        Predicate<Field> isWithinBoundaries = island.getFields()::containsKey;
         Predicate<Field> isWithinNumberLimitation = field -> {
             EntityType type = EntityType.ofClass(entity.getClass());
-            return fields.get(field).get(type).stream().filter(animal -> !animal.getIsRemovable()).count() < entity.getLimit();
+            return island.getFields().get(field).get(type).stream().filter(animal -> !animal.getRemovable()).count() < entity.getLimit();
         };
         return Arrays.stream(Direction.values())
                 .filter(direction -> directionValidation(location, direction, isWithinBoundaries))

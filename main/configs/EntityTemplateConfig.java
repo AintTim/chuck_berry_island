@@ -9,12 +9,12 @@ import lombok.Getter;
 import services.CreatorService;
 
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 @Getter
 public class EntityTemplateConfig {
 
-    private final Map<EntityType, CreatorService<Entity, Entity>> templates;
+    private final ConcurrentMap<EntityType, CreatorService<Entity, Entity>> templates;
 
     public EntityTemplateConfig(Path path, ObjectMapper mapper) {
         templates = ParsingHandler.getObjectFromJson(path, new TypeReference<>(){}, mapper);
