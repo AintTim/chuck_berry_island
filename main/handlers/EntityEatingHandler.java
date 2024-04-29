@@ -25,21 +25,13 @@ public class EntityEatingHandler {
             return Collections.emptyList();
         }
         var location = island.getFields().get(island.locateEntity(animal));
-        if (preyType.equals(EntityType.GRASS)) {
-            var grass = location.get(EntityType.GRASS);
-            int number = (grass.size() < (animal.getHunger() - animal.getSaturation()) )
-                    ? grass.size()
-                    : (int) (animal.getHunger() - animal.getSaturation());
-            return location.get(EntityType.GRASS).subList(0, number);
-        } else {
-            var preys = location.get(preyType).stream()
-                    .filter(entity -> !entity.getRemovable()).toList();
-            return List.of(preys.get(ThreadLocalRandom.current().nextInt(preys.size())));
-        }
+        return preyType.equals(EntityType.GRASS)
+                ? getPlants(location, animal)
+                : List.of(getRandomPrey(location, preyType));
     }
 
-    public EntityType getPrey(Animal animal) {
-        int chance = ThreadLocalRandom.current().nextInt(101);
+    private EntityType getPrey(Animal animal) {
+        int chance = ThreadLocalRandom.current().nextInt(config.getDefaultHealth() + 1);
         var preys = config.getEatingProbability().getPreys(animal);
 
         Comparator<Map.Entry<EntityType, List<Entity>>> maxWeight = (type1, type2)
@@ -53,8 +45,16 @@ public class EntityEatingHandler {
                 .orElse(null);
     }
 
-    private Entity getRandomPrey(Map.Entry<EntityType, List<Entity>> entities) {
-        var preys = entities.getValue().stream().filter(entity -> !entity.getRemovable()).toList();
+    private List<Entity> getPlants(EnumMap<EntityType, List<Entity>> location, Animal animal) {
+        var grass = location.get(EntityType.GRASS);
+        int number = (grass.size() < (animal.getHunger() - animal.getSaturation()) )
+                ? grass.size()
+                : (int) (animal.getHunger() - animal.getSaturation());
+        return location.get(EntityType.GRASS).subList(0, number);
+    }
+
+    private Entity getRandomPrey(EnumMap<EntityType, List<Entity>> location, EntityType preyType) {
+        var preys = location.get(preyType).stream().filter(entity -> !entity.getRemovable()).toList();
         return preys.get(ThreadLocalRandom.current().nextInt(preys.size()));
     }
 

@@ -71,8 +71,9 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     }
 
     @Override
-    public void breed(LivingBeing animal) {
-
+    public void breed(Animal animal) {
+        this.setHasOffspring(true);
+        animal.setHasOffspring(true);
     }
 
     @Override

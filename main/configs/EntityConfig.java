@@ -14,12 +14,14 @@ public class EntityConfig {
     private final EntityTemplateConfig entityTemplate;
     private final int starvingHealthReduction;
     private final int healthRecoverWithFullSaturation;
+    private final int defaultHealth;
 
     public EntityConfig(EatingProbabilityConfig eatingProbability, EntityTemplateConfig entityTemplate, Properties properties) {
         this.eatingProbability = eatingProbability;
         this.entityTemplate = entityTemplate;
         this.starvingHealthReduction = Integer.parseInt(properties.getProperty("animal.health_reduction"));
         this.healthRecoverWithFullSaturation = Integer.parseInt(properties.getProperty("animal.health_recover"));
+        this.defaultHealth = Integer.parseInt(properties.getProperty("animal.default_health"));
     }
 
     public Map<EntityType, CreatorService<Entity, Entity>> getTemplates() {

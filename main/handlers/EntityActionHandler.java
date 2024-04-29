@@ -15,28 +15,17 @@ import java.util.function.Predicate;
 
 public class EntityActionHandler {
 
-    private final Map<Field, EnumMap<EntityType, List<Entity>>> fields;
+    private final Island island;
     private final EntityConfig config;
 
     public EntityActionHandler(Island island, EntityConfig config) {
-        this.fields = island.getFields();
+        this.island = island;
         this.config = config;
     }
 
-    public void prepareEntities() {
-        for (var field : fields.entrySet()) {
-            field.getValue().values().stream().flatMap(Collection::stream)
-                    .filter(Animal.class::isInstance)
-                    .forEach(animal -> setRandomAction(field.getKey(), (Animal) animal));
-        }
-    }
-
-    public void setRandomAction(Field field, Animal animal) {
+    public void setRandomAction(Animal animal) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-//        if (animal instanceof Wolf) {
-//            System.out.println("");
-//        }
-
+        Field field = island.locateEntity(animal);
         if (canBreed(animal, field)) {
             if (canEat(animal,field)) {
                 animal.setAction(Action.values()[random.nextInt(3)]);
@@ -50,8 +39,8 @@ public class EntityActionHandler {
                 animal.setAction(Action.MOVE);
             }
         }
-        if (animal.getAction().equals(Action.EAT) && animal instanceof Wolf wolf) {
-            System.out.printf("%s-%d выбрал следующее действие: %s%n", wolf.getClass(), wolf.getId(), wolf.getAction());
+        if (animal instanceof Wolf wolf) {
+            System.out.printf("%s-%d выбрал следующее действие: %s%n", wolf.getClass().getSimpleName(), wolf.getId(), wolf.getAction());
         }
     }
 
@@ -67,7 +56,7 @@ public class EntityActionHandler {
 
     private List<Entity> getEdibleNeighbors(Field location, Animal animal) {
         var preys = config.getEatingProbability().getPreys(animal);
-        return fields.get(location).entrySet().stream()
+        return island.getFields().get(location).entrySet().stream()
                 .filter(field -> preys.contains(field.getKey()))
                 .flatMap(field -> field.getValue().stream())
                 .toList();
@@ -75,7 +64,7 @@ public class EntityActionHandler {
 
     private List<Animal> getBreedingNeighbors(Field field, Animal animal, Predicate<Animal> condition) {
         EntityType type = EntityType.ofClass(animal.getClass());
-        return fields.get(field).get(type).stream()
+        return island.getFields().get(field).get(type).stream()
                 .map(Animal.class::cast)
                 .filter(a -> !a.equals(animal))
                 .filter(condition)

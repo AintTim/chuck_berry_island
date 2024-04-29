@@ -5,7 +5,6 @@ import configs.IslandConfig;
 import constants.Action;
 import constants.EntityType;
 import entities.herbivores.Deer;
-import entities.plants.Plant;
 import entities.predators.Wolf;
 import lombok.Getter;
 import services.ManageEntityService;
@@ -13,10 +12,7 @@ import services.ManageEntityService;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 
 @Getter
 public class Island implements ManageEntityService {
@@ -30,25 +26,6 @@ public class Island implements ManageEntityService {
         this.entityConfig = entity;
     }
 
-    private static void initFields(IslandConfig config, Map<Field, EnumMap<EntityType, List<Entity>>> fields) {
-        for (int x = 0; x < config.getWidth(); x++) {
-            for (int y = 0; y < config.getHeight(); y++) {
-                fields.put(new Field(x, y), new EnumMap<>(EntityType.class));
-            }
-        }
-    }
-
-    public Field locateEntity(Entity entity) {
-        for (var field : fields.entrySet()) {
-            var fieldMap = field.getValue();
-            var entities = fieldMap.get(EntityType.ofClass(entity.getClass()));
-            if (entities.contains(entity)) {
-                return field.getKey();
-            }
-        }
-        throw new IllegalArgumentException("Искомая сущность отсутствует на острове");
-    }
-
     //убрать мертвых животных - Статистика по умершим животным
     @Override
     public void resetEntities(Predicate<Entity> condition) {
@@ -58,11 +35,9 @@ public class Island implements ManageEntityService {
 
     //восполнить растения
     @Override
-    public void refillPlants(Entity plant, IntFunction<List<Entity>> createPlant) {
-        if (!(plant instanceof Plant)) {
-            throw new IllegalArgumentException(String.format("Передаваемая сущность должная являться Plant (%s)", plant.getClass().getSimpleName()));
-        }
-        fields.values().forEach(map -> fillWithRandomNumberOfPlants(plant, createPlant, map));
+    public void refillPlants(IntFunction<List<Entity>> createPlant) {
+
+        fields.values().forEach(map -> fillWithRandomNumberOfPlants(createPlant, map));
     }
 
     @Override
@@ -81,7 +56,7 @@ public class Island implements ManageEntityService {
 
     @Override
     public void feedAnimals(Function<Animal, List<Entity>> eat) {
-        Predicate<Animal> isEating = animal -> Action.EAT.equals(animal.getAction()) && !animal.getRemovable();
+        Predicate<Animal> isEating = animal -> Action.EAT.equals(animal.getAction());
 
         for (var field : fields.entrySet()) {
             field.getValue().values().stream()
@@ -93,11 +68,82 @@ public class Island implements ManageEntityService {
         }
     }
 
+    @Override
+    public void prepareAnimals(Consumer<Animal> prepare) {
+        for (var field : fields.entrySet()) {
+            field.getValue().values().stream().flatMap(Collection::stream)
+                    .filter(Animal.class::isInstance)
+                    .map(Animal.class::cast)
+                    .forEach(prepare);
+        }
+    }
+
+    @Override
+    public void breedAnimals(UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring) {
+        Predicate<Animal> isBreeding = animal -> Action.BREED.equals(animal.getAction());
+
+        for (var field : fields.entrySet()) {
+            field.getValue().values().stream()
+                    .flatMap(Collection::stream)
+                    .filter(Animal.class::isInstance)
+                    .map(Animal.class::cast)
+                    .filter(isBreeding)
+                    .forEach(animal -> breedAnimal(field.getKey(), animal, breed, createOffspring));
+        }
+    }
+
+    public Field locateEntity(Entity entity) {
+        for (var field : fields.entrySet()) {
+            var fieldMap = field.getValue();
+            var entities = fieldMap.get(EntityType.ofClass(entity.getClass()));
+            if (entities.contains(entity)) {
+                return field.getKey();
+            }
+        }
+        throw new IllegalArgumentException("Искомая сущность отсутствует на острове");
+    }
+
+    private static void initFields(IslandConfig config, Map<Field, EnumMap<EntityType, List<Entity>>> fields) {
+        for (int x = 0; x < config.getWidth(); x++) {
+            for (int y = 0; y < config.getHeight(); y++) {
+                fields.put(new Field(x, y), new EnumMap<>(EntityType.class));
+            }
+        }
+    }
+
+    private void breedAnimal(Field location, Animal animal, UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring) {
+        Animal partner = breed.apply(animal);
+        updateAnimalStatus(animal, true);
+        if (Objects.nonNull(partner)) {
+            updateAnimalStatus(partner, true);
+            EntityType type = EntityType.ofClass(animal.getClass());
+            List<Entity> animals = fields.get(location).get(type);
+            if (animals.size() + 1 <= animal.getLimit()) {
+                var offspring = createOffspring.apply(type);
+                animal.breed(partner);
+                var updatedEntities = new ArrayList<>(animals);
+                updatedEntities.add(offspring);
+                fields.get(location).put(type, updatedEntities);
+                System.out.printf("Пара: %s-%s и %s-%s\t Потомство: %s-%s%n",
+                        animal.getClass().getSimpleName(), animal.getId(),
+                        partner.getClass().getSimpleName(), partner.getId(),
+                        offspring.getClass().getSimpleName(), offspring.getId());
+                //TODO: Статистика новорожденных животных
+            } else {
+                System.out.printf("Пара: %s-%s и %s-%s\t не могут дать потомства из-за перенаселенности клетки %d%n",
+                        animal.getClass().getSimpleName(), animal.getId(),
+                        partner.getClass().getSimpleName(), partner.getId(),
+                        animals.size());
+            }
+        } else {
+            System.out.printf("%s-%s не нашёл пару на клетке %s%n",
+                    animal.getClass().getSimpleName(), animal.getId(), location);
+        }
+    }
+
     private void moveAnimal(Field start, Animal animal, Function<Animal, Field> relocate) {
         Field destination = relocate.apply(animal);
-        animal.setActionDone(true);
-        animal.setAction(Action.IDLE);
-        animal.starve(entityConfig.getStarvingHealthReduction());
+        updateAnimalStatus(animal, true);
         if (!start.equals(destination)) {
             removeEntity(start, animal);
             EntityType type = EntityType.ofClass(animal.getClass());
@@ -111,29 +157,39 @@ public class Island implements ManageEntityService {
 
     private void eatEntity(Field location, Animal attacker, Function<Animal, List<Entity>> eat) {
         List<Entity> prey = eat.apply(attacker);
-        attacker.setActionDone(true);
-        attacker.setAction(Action.IDLE);
         if (prey.isEmpty()) {
-            attacker.starve(entityConfig.getStarvingHealthReduction());
+            updateAnimalStatus(attacker, true);
         } else if (prey.size() == 1) {
             if (attacker instanceof Wolf wolf) {
-                System.out.printf("%s-%d съел %s-%d с текущим уровнем сытости %s и здоровьем %d%n", wolf.getClass(), wolf.getId(), prey.get(0).getClass(), prey.get(0).getId(), wolf.getSaturation(), wolf.getHealth());
+                System.out.printf("%s-%d съел %s-%d с текущим уровнем сытости %s и здоровьем %d%n", wolf.getClass().getSimpleName(), wolf.getId(), prey.get(0).getClass().getSimpleName(), prey.get(0).getId(), wolf.getSaturation(), wolf.getHealth());
             }
+            updateAnimalStatus(attacker, false);
             attacker.eat(prey.get(0), entityConfig.getHealthRecoverWithFullSaturation());
             removeEntity(location, prey.get(0));
             if (attacker instanceof Wolf wolf) {
-                System.out.printf("%s-%d восстановил уровень сытости до %s с здоровьем %d%n", wolf.getClass(), wolf.getId(), wolf.getSaturation(), wolf.getHealth());
+                System.out.printf("%s-%d восстановил уровень сытости до %s с здоровьем %d%n", wolf.getClass().getSimpleName(), wolf.getId(), wolf.getSaturation(), wolf.getHealth());
             }
         } else {
             if (attacker instanceof Deer deer) {
-                System.out.printf("%s-%d съел %d кг травы с текущим уровнем сытости %s и здоровьем %d%n", deer.getClass(), deer.getId(), prey.size(), deer.getSaturation(), deer.getHealth());
+                System.out.printf("%s-%d съел %d кг травы с текущим уровнем сытости %s и здоровьем %d%n", deer.getClass().getSimpleName(), deer.getId(), prey.size(), deer.getSaturation(), deer.getHealth());
             }
+            updateAnimalStatus(attacker, false);
             prey.forEach(grass -> attacker.eat(grass, entityConfig.getHealthRecoverWithFullSaturation()));
             removeEntities(location, prey);
             if (attacker instanceof Deer deer) {
-                System.out.printf("%s-%d восстановил уровень сытости до %s с здоровьем %d%n", deer.getClass(), deer.getId(), deer.getSaturation(), deer.getHealth());
+                System.out.printf("%s-%d восстановил уровень сытости до %s с здоровьем %d%n", deer.getClass().getSimpleName(), deer.getId(), deer.getSaturation(), deer.getHealth());
             }
         }
+    }
+
+    private void fillWithRandomNumberOfPlants(IntFunction<List<Entity>> createPlant, EnumMap<EntityType, List<Entity>> map) {
+        List<Entity> plants = map.get(EntityType.GRASS);
+        Entity grass = (Entity) entityConfig.getTemplate(EntityType.GRASS);
+        int difference = grass.getLimit() - plants.size();
+        if (difference > 0) {
+            plants.addAll(createPlant.apply(difference));
+        }
+        //TODO: Статистика созданной травы
     }
 
     private void removeEntities(Field location, List<Entity> entities) {
@@ -150,12 +206,11 @@ public class Island implements ManageEntityService {
         fields.get(location).put(type, updatedEntities);
     }
 
-    private void fillWithRandomNumberOfPlants(Entity plant, IntFunction<List<Entity>> createPlant, EnumMap<EntityType, List<Entity>> map) {
-        List<Entity> plants = map.get(EntityType.GRASS);
-        int difference = plant.getLimit() - plants.size();
-        if (difference > 0) {
-            plants.addAll(createPlant.apply(difference));
+    private void updateAnimalStatus(Animal animal, boolean isHungry) {
+        animal.setActionDone(true);
+        animal.setAction(Action.IDLE);
+        if (isHungry) {
+            animal.starve(entityConfig.getStarvingHealthReduction());
         }
-        //TODO: Статистика созданной травы
     }
 }

@@ -1,6 +1,7 @@
 package services;
 
 import constants.Direction;
+import entities.Animal;
 import entities.Entity;
 
 import java.util.List;
@@ -10,6 +11,6 @@ public interface LivingBeing {
 
     void eat(Entity entity, Integer increase);
     void starve(Integer decrease);
-    void breed(LivingBeing animal);
+    void breed(Animal animal);
     Direction chooseRoute(ThreadLocalRandom random, List<Direction> directions);
 }
