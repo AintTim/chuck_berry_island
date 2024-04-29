@@ -15,7 +15,7 @@ public class Bear extends Predator {
     private static final AtomicLong counter = new AtomicLong(0);
 
     public Bear(Entity animal) {
-        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger());
+        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger(), animal.getPicture());
         this.id = animal.getId();
     }
 
@@ -24,10 +24,5 @@ public class Bear extends Predator {
         Bear bear = new Bear(entity);
         bear.setId(counter.getAndIncrement());
         return bear;
-    }
-
-    @Override
-    public Bear copy(Animal entity) {
-        return new Bear(entity);
     }
 }

@@ -22,10 +22,15 @@ public class EntityBreedingHandler {
         EntityType type = EntityType.ofClass(animal.getClass());
         var partners = island.getFields().get(location).get(type).stream()
                 .map(Animal.class::cast)
-                .filter(a -> Action.BREED.equals(a.getAction()) && !a.isActionDone())
+                .filter(partner -> isSuitablePartner(animal, partner))
                 .toList();
+
         return partners.isEmpty()
                 ? null
                 : partners.get(ThreadLocalRandom.current().nextInt(partners.size()));
+    }
+
+    private boolean isSuitablePartner(Animal animal, Animal partner) {
+        return Action.BREED.equals(partner.getAction()) && !partner.isActionDone() && !partner.equals(animal);
     }
 }

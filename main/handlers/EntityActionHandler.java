@@ -7,6 +7,7 @@ import entities.Animal;
 import entities.Entity;
 import entities.Field;
 import entities.Island;
+import entities.predators.Bear;
 import entities.predators.Wolf;
 
 import java.util.*;
@@ -39,8 +40,8 @@ public class EntityActionHandler {
                 animal.setAction(Action.MOVE);
             }
         }
-        if (animal instanceof Wolf wolf) {
-            System.out.printf("%s-%d выбрал следующее действие: %s%n", wolf.getClass().getSimpleName(), wolf.getId(), wolf.getAction());
+        if (animal instanceof Bear wolf) {
+            System.out.printf("%s-%d выбрал следующее действие: %s%n", wolf.getPicture(), wolf.getId(), wolf.getAction());
         }
     }
 

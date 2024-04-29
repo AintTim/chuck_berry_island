@@ -9,12 +9,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @NoArgsConstructor
 public class Duck extends Herbivore {
     private static final AtomicLong counter = new AtomicLong(0);
-    public Duck(Double weight, Integer velocity, Integer limit, Double hunger) {
-        super(weight, velocity, limit, hunger);
-    }
 
     public Duck(Entity animal) {
-        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger());
+        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger(), animal.getPicture());
         this.id = animal.getId();
     }
 
@@ -23,10 +20,5 @@ public class Duck extends Herbivore {
         Duck duck = new Duck(entity);
         duck.setId(counter.getAndIncrement());
         return duck;
-    }
-
-    @Override
-    public Duck copy(Animal entity) {
-        return new Duck(entity);
     }
 }

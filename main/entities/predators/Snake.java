@@ -10,12 +10,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @NoArgsConstructor
 public class Snake extends Predator {
     private static final AtomicLong counter = new AtomicLong(0);
-    public Snake(Double weight, Integer velocity, Integer limit, Double hunger) {
-        super(weight, velocity, limit, hunger);
-    }
 
     public Snake(Entity animal) {
-        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger());
+        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger(), animal.getPicture());
         this.id = animal.getId();
     }
 
@@ -24,10 +21,5 @@ public class Snake extends Predator {
         Snake snake = new Snake(entity);
         snake.setId(counter.getAndIncrement());
         return snake;
-    }
-
-    @Override
-    public Snake copy(Animal entity) {
-        return new Snake(entity);
     }
 }

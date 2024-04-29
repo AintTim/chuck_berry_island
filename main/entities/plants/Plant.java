@@ -7,7 +7,7 @@ import services.CreatorService;
 @NoArgsConstructor
 public abstract class Plant extends Entity implements CreatorService<Plant, Plant> {
 
-    protected Plant(Double weight, Integer velocity, Integer limit, Double hunger) {
-        super(weight, velocity, limit, hunger);
+    protected Plant(Double weight, Integer velocity, Integer limit, Double hunger, String picture) {
+        super(weight, velocity, limit, hunger, picture);
     }
 }

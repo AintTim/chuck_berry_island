@@ -9,12 +9,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @NoArgsConstructor
 public class Deer extends Herbivore {
     private static final AtomicLong counter = new AtomicLong(0);
-    public Deer(Double weight, Integer velocity, Integer limit, Double hunger) {
-        super(weight, velocity, limit, hunger);
-    }
 
     public Deer(Entity animal) {
-        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger());
+        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger(), animal.getPicture());
         this.id = animal.getId();
     }
 
@@ -23,10 +20,5 @@ public class Deer extends Herbivore {
         Deer deer = new Deer(entity);
         deer.setId(counter.getAndIncrement());
         return deer;
-    }
-
-    @Override
-    public Deer copy(Animal entity) {
-        return new Deer(entity);
     }
 }

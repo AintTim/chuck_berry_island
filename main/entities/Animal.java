@@ -24,20 +24,13 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     protected Action action;
     protected int health;
     protected Double saturation;
-    protected Animal(Double weight, Integer velocity, Integer limit, Double hunger) {
-        super(weight, velocity, limit, hunger);
+    protected Animal(Double weight, Integer velocity, Integer limit, Double hunger, String picture) {
+        super(weight, velocity, limit, hunger, picture);
         this.action = Action.IDLE;
         this.health = 100;
         this.saturation = hunger;
         this.removable = false;
         this.hasOffspring = false;
-    }
-
-    protected Animal(Double weight, Integer velocity, Integer limit, Double hunger, boolean isActionDone, Action action, int health) {
-        super(weight, velocity, limit, hunger);
-        this.isActionDone = isActionDone;
-        this.action = action;
-        this.health = health;
     }
 
     @Override

@@ -9,12 +9,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @NoArgsConstructor
 public class Fox extends Predator {
     private static final AtomicLong counter = new AtomicLong(0);
-    public Fox(Double weight, Integer velocity, Integer limit, Double hunger) {
-        super(weight, velocity, limit, hunger);
-    }
 
     public Fox(Entity animal) {
-        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger());
+        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger(), animal.getPicture());
         this.id = animal.getId();
     }
 
@@ -23,10 +20,5 @@ public class Fox extends Predator {
         Fox fox = new Fox(entity);
         fox.setId(counter.getAndIncrement());
         return fox;
-    }
-
-    @Override
-    public Fox copy(Animal entity) {
-        return new Fox(entity);
     }
 }

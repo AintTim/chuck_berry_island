@@ -13,7 +13,7 @@ public class Eagle extends Predator {
     private static final AtomicLong counter = new AtomicLong(0);
 
     public Eagle(Entity animal) {
-        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger());
+        super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger(), animal.getPicture());
         this.id = animal.getId();
     }
 
@@ -22,10 +22,5 @@ public class Eagle extends Predator {
         Eagle eagle = new Eagle(entity);
         eagle.setId(counter.getAndIncrement());
         return eagle;
-    }
-
-    @Override
-    public Eagle copy(Animal entity) {
-        return new Eagle(entity);
     }
 }

@@ -15,12 +15,15 @@ public abstract class Entity {
     protected Double hunger;
     @Setter
     protected Boolean removable;
+    @Setter
+    protected String picture;
 
-    protected Entity(Double weight, Integer velocity, Integer limit, Double hunger) {
+    protected Entity(Double weight, Integer velocity, Integer limit, Double hunger, String picture) {
         this.weight = weight;
         this.velocity = velocity;
         this.limit = limit;
         this.hunger = hunger;
+        this.picture = picture;
         this.removable = false;
     }
 }

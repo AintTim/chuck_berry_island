@@ -8,12 +8,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @NoArgsConstructor
 public class Grass extends Plant {
     private static final AtomicLong counter = new AtomicLong(0);
-    public Grass(Double weight, Integer velocity, Integer limit, Double hunger) {
-        super(weight, velocity, limit, hunger);
-    }
 
     public Grass(Entity entity) {
-        super(entity.getWeight(), entity.getVelocity(), entity.getLimit(), entity.getHunger());
+        super(entity.getWeight(), entity.getVelocity(), entity.getLimit(), entity.getHunger(), entity.getPicture());
         this.id = entity.getId();
     }
 
@@ -22,10 +19,5 @@ public class Grass extends Plant {
         Grass grass = new Grass(entity);
         grass.setId(counter.getAndIncrement());
         return grass;
-    }
-
-    @Override
-    public Grass copy(Plant entity) {
-        return new Grass(entity);
     }
 }
