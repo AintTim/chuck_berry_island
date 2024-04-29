@@ -8,11 +8,11 @@ import entities.Island;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class EntityBreedingHandler {
+public class BreedingHandler {
     private final Island island;
     private final EntityConfig config;
 
-    public EntityBreedingHandler(Island island, EntityConfig config) {
+    public BreedingHandler(Island island, EntityConfig config) {
         this.island = island;
         this.config = config;
     }

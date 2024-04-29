@@ -8,18 +8,17 @@ import entities.Entity;
 import entities.Field;
 import entities.Island;
 import entities.predators.Bear;
-import entities.predators.Wolf;
 
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
-public class EntityActionHandler {
+public class ActionHandler {
 
     private final Island island;
     private final EntityConfig config;
 
-    public EntityActionHandler(Island island, EntityConfig config) {
+    public ActionHandler(Island island, EntityConfig config) {
         this.island = island;
         this.config = config;
     }

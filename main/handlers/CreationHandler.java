@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
-public class EntityCreationHandler {
+public class CreationHandler {
     private final EntityConfig entityConfig;
 
-    public EntityCreationHandler(EntityConfig entityConfig) {
+    public CreationHandler(EntityConfig entityConfig) {
         this.entityConfig = entityConfig;
     }
 

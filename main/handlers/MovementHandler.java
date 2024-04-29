@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
-public class EntityMovementHandler {
+public class MovementHandler {
     private final Island island;
 
-    public EntityMovementHandler(Island island) {
+    public MovementHandler(Island island) {
         this.island = island;
     }
 

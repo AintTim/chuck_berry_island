@@ -4,17 +4,16 @@ import configs.EntityConfig;
 import constants.EntityType;
 import entities.Animal;
 import entities.Entity;
-import entities.Field;
 import entities.Island;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class EntityEatingHandler {
+public class EatingHandler {
     private final Island island;
     private final EntityConfig config;
 
-    public EntityEatingHandler(Island island, EntityConfig config) {
+    public EatingHandler(Island island, EntityConfig config) {
         this.island = island;
         this.config = config;
     }
