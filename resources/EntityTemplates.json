@@ -1,105 +1,118 @@
 {
   "bear": {
-      "type": "bear",
-      "weight": 500,
-      "velocity": 2,
-      "limit": 5,
-      "hunger": 80
-
+    "type": "bear",
+    "weight": 500,
+    "velocity": 2,
+    "limit": 5,
+    "hunger": 80,
+    "action": "IDLE",
+    "picture": "\uD83D\uDC3B"
   },
   "caterpillar": {
-      "type": "caterpillar",
-      "weight": 0.01,
-      "velocity": 0,
-      "limit": 1000,
-      "hunger": 0
-
+    "type": "caterpillar",
+    "weight": 0.01,
+    "velocity": 0,
+    "limit": 1000,
+    "hunger": 0.001,
+    "action": "IDLE",
+    "picture": "\uD83D\uDC1B"
   },
   "deer": {
-      "type": "deer",
-      "weight": 300,
-      "velocity": 4,
-      "limit": 20,
-      "hunger": 50
-
+    "type": "deer",
+    "weight": 300,
+    "velocity": 4,
+    "limit": 20,
+    "hunger": 50,
+    "action": "IDLE",
+    "picture": "\uD83E\uDD8C"
   },
   "duck": {
-      "type": "duck",
-      "weight": 1,
-      "velocity": 4,
-      "limit": 200,
-      "hunger": 0.15
-
+    "type": "duck",
+    "weight": 1,
+    "velocity": 4,
+    "limit": 200,
+    "hunger": 0.15,
+    "action": "IDLE",
+    "picture": "\uD83E\uDD86"
   },
   "eagle": {
-      "type": "eagle",
-      "weight": 6,
-      "velocity": 3,
-      "limit": 20,
-      "hunger": 1
+    "type": "eagle",
+    "weight": 6,
+    "velocity": 3,
+    "limit": 20,
+    "hunger": 1,
+    "action": "IDLE",
+    "picture": "\uD83E\uDD85"
   },
   "fox": {
-      "type": "fox",
-      "weight": 8,
-      "velocity": 2,
-      "limit": 30,
-      "hunger": 2
-
+    "type": "fox",
+    "weight": 8,
+    "velocity": 2,
+    "limit": 30,
+    "hunger": 2,
+    "action": "IDLE",
+    "picture": "\uD83E\uDD8A"
   },
   "grass": {
-      "type": "grass",
-      "weight": 1,
-      "velocity": null,
-      "limit": 200,
-      "hunger": null
-
+    "type": "grass",
+    "weight": 1,
+    "velocity": null,
+    "limit": 200,
+    "hunger": null,
+    "picture": "\uD83E\uDEB4"
   },
   "horse": {
-     "type": "horse",
-      "weight": 400,
-      "velocity": 4,
-      "limit": 20,
-      "hunger": 60
-
+    "type": "horse",
+    "weight": 400,
+    "velocity": 4,
+    "limit": 20,
+    "hunger": 60,
+    "action": "IDLE",
+    "picture": "\uD83D\uDC0E"
   },
   "mouse": {
-     "type": "mouse",
-      "weight": 0.05,
-      "velocity": 1,
-      "limit": 500,
-      "hunger": 0.01
-
+    "type": "mouse",
+    "weight": 0.05,
+    "velocity": 1,
+    "limit": 500,
+    "hunger": 0.01,
+    "action": "IDLE",
+    "picture": "\uD83D\uDC01"
   },
   "rabbit": {
-      "type": "rabbit",
-      "weight": 2,
-      "velocity": 2,
-      "limit": 150,
-      "hunger": 0.45
-
+    "type": "rabbit",
+    "weight": 2,
+    "velocity": 2,
+    "limit": 150,
+    "hunger": 0.45,
+    "action": "IDLE",
+    "picture": "\uD83D\uDC07"
   },
   "sheep": {
-      "type": "sheep",
-      "weight": 70,
-      "velocity": 3,
-      "limit": 140,
-      "hunger": 15
-
+    "type": "sheep",
+    "weight": 70,
+    "velocity": 3,
+    "limit": 140,
+    "hunger": 15,
+    "action": "IDLE",
+    "picture": "\uD83D\uDC11"
   },
   "snake": {
-      "type": "snake",
-      "weight": 15,
-      "velocity": 1,
-      "limit": 30,
-      "hunger": 3
-
+    "type": "snake",
+    "weight": 15,
+    "velocity": 1,
+    "limit": 30,
+    "hunger": 3,
+    "action": "IDLE",
+    "picture": "\uD83D\uDC0D"
   },
   "wolf": {
-      "type": "wolf",
-      "weight": 50,
-      "velocity": 3,
-      "limit": 30,
-      "hunger": 8
-
+    "type": "wolf",
+    "weight": 50,
+    "velocity": 3,
+    "limit": 30,
+    "hunger": 8,
+    "action": "IDLE",
+    "picture": "\uD83D\uDC3A"
   }
 }
