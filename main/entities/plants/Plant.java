@@ -10,4 +10,9 @@ public abstract class Plant extends Entity implements CreatorService<Plant, Plan
     protected Plant(Double weight, Integer velocity, Integer limit, Double hunger, String picture) {
         super(weight, velocity, limit, hunger, picture);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%d%s", id, picture);
+    }
 }

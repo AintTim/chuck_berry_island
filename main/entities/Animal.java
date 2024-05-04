@@ -34,7 +34,7 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     }
 
     @Override
-    public void eat(Entity entity, Integer increase) {
+    public synchronized void eat(Entity entity, Integer increase) {
         saturation = (entity.getWeight() > (hunger - saturation))
                 ? hunger
                 : saturation + entity.getWeight();
@@ -44,19 +44,17 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
                 health = 100;
             }
         }
-        //TODO: Нужно ли добавлять статус, если сразу удаляю?
-        entity.setRemovable(true);
     }
 
     @Override
-    public void starve(Integer decrease) {
+    public synchronized void starve(Integer decrease) {
         if (!saturation.equals(hunger)) {
             health -= decrease;
-            if (health < 0) {
+            if (health <= 0) {
                 removable = true;
             }
         } else {
-            saturation -= saturation / 4;
+            saturation -= Math.ceil(saturation / 5);
             if (saturation < 0) {
                 saturation = 0.0;
             }
@@ -64,7 +62,7 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     }
 
     @Override
-    public void breed(Animal animal) {
+    public synchronized void breed(Animal animal) {
         this.setHasOffspring(true);
         animal.setHasOffspring(true);
     }
@@ -72,5 +70,10 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     @Override
     public Direction chooseRoute(ThreadLocalRandom random, List<Direction> directions) {
         return directions.get(random.nextInt(directions.size()));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d%s (%d:%s)", id, picture, health, removable);
     }
 }

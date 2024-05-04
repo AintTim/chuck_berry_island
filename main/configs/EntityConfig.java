@@ -5,6 +5,8 @@ import entities.Entity;
 import lombok.Getter;
 import services.CreatorService;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -30,5 +32,11 @@ public class EntityConfig {
 
     public CreatorService<Entity, Entity> getTemplate(EntityType type) {
         return entityTemplate.getTemplates().get(type);
+    }
+
+    public List<EntityType> getAnimals() {
+        return Arrays.stream(EntityType.values())
+                .filter(type -> !type.equals(EntityType.GRASS))
+                .toList();
     }
 }

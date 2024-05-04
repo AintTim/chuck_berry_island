@@ -14,11 +14,11 @@ public interface ManageEntityService {
 
     void refillPlants(IntFunction<List<Entity>> createPlant);
 
-    void moveAnimals(Function<Animal, Field> relocate);
+    void moveAnimals(EntityType type, Function<Animal, Field> relocate);
 
-    void feedAnimals(Function<Animal, List<Entity>> eat);
+    void feedAnimals(EntityType type, Function<Animal, List<Entity>> eat);
 
-    void prepareAnimals(Consumer<Animal> prepare);
+    void prepareAnimals(EntityType type, Consumer<Animal> prepare);
 
-    void breedAnimals(UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring);
+    void breedAnimals(EntityType type, UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring);
 }

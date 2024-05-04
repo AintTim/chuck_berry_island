@@ -7,7 +7,6 @@ import entities.Animal;
 import entities.Entity;
 import entities.Field;
 import entities.Island;
-import entities.predators.Bear;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -38,9 +37,6 @@ public class ActionHandler {
             } else {
                 animal.setAction(Action.MOVE);
             }
-        }
-        if (animal instanceof Bear wolf) {
-            System.out.printf("%s-%d выбрал следующее действие: %s%n", wolf.getPicture(), wolf.getId(), wolf.getAction());
         }
     }
 

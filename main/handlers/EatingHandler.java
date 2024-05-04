@@ -46,9 +46,10 @@ public class EatingHandler {
 
     private List<Entity> getPlants(EnumMap<EntityType, List<Entity>> location, Animal animal) {
         var grass = location.get(EntityType.GRASS);
-        int number = (grass.size() < (animal.getHunger() - animal.getSaturation()) )
+        double requiredFoodAmount = animal.getHunger() - animal.getSaturation();
+        int number = (grass.size() < Math.ceil(requiredFoodAmount * 0.75))
                 ? grass.size()
-                : (int) (animal.getHunger() - animal.getSaturation());
+                : (int) Math.ceil(requiredFoodAmount * 0.75);
         return location.get(EntityType.GRASS).subList(0, number);
     }
 
@@ -61,7 +62,7 @@ public class EatingHandler {
         if (!preys.contains(entities.getKey())) {
             return false;
         }
-        return !entities.getValue().isEmpty();
+        return entities.getValue().stream().anyMatch(entity -> !entity.getRemovable());
     }
 
     private boolean canBeEaten(Map.Entry<EntityType, List<Entity>> entities, Animal attacker, int chance) {
