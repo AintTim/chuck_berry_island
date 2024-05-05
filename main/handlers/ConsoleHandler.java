@@ -103,7 +103,7 @@ public class ConsoleHandler {
             return false;
         }
         try {
-            int val = Integer.parseInt(value);
+            Integer.parseInt(value);
         } catch (NumberFormatException e) {
             return false;
         }
