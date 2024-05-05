@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import configs.*;
+import constants.Setting;
 import constants.Stage;
 import handlers.ConsoleHandler;
 import handlers.PropertiesHandler;
@@ -19,25 +20,25 @@ public class Main {
         var templateConfig = new EntityTemplateConfig(propertiesHandler.getPath("template.path"), new ObjectMapper());
 
         ConsoleHandler console = new ConsoleHandler(new Scanner(System.in), propertiesHandler);
-        console.presentOptions();
+        console.printCurrentSettings();
+        console.editSettings();
+
         EntityConfig entityConfig = new EntityConfig(eatingProbabilityConfig, templateConfig, propertiesHandler.getProperties());
         IslandConfig config = new IslandConfig(propertiesHandler.getProperties());
         SetupConfig setup = new SetupConfig(entityConfig, config);
 
+        TaskHandler taskManager = new TaskHandler();
         setup.init();
 
-
-        int days = 1;
-        Integer entities = Integer.MAX_VALUE;
-        TaskHandler taskManager = new TaskHandler();
         ExecutorService plantsExecutor = Executors.newSingleThreadExecutor();
         ExecutorService preparationExecutor = Executors.newCachedThreadPool();
-        ExecutorService movementExecutor = Executors.newFixedThreadPool(12);
-        ExecutorService feedExecutor = Executors.newFixedThreadPool(12);
-        ExecutorService breedingExecutor = Executors.newFixedThreadPool(12);
+        ExecutorService movementExecutor = Executors.newFixedThreadPool(entityConfig.getAnimals().size());
+        ExecutorService feedExecutor = Executors.newFixedThreadPool(entityConfig.getAnimals().size());
+        ExecutorService breedingExecutor = Executors.newFixedThreadPool(entityConfig.getAnimals().size());
         ExecutorService resetExecutor = Executors.newSingleThreadExecutor();
 
-        while (days < 11) {
+        int days = 0;
+        while (days < propertiesHandler.getNumberProperty(Setting.LIFESPAN.getProperty())) {
             setup.resetStatistics();
             setup.getIsland().countEntities();
             taskManager.runTask(plantsExecutor, new Task(Stage.PLANTING, setup::updatePlants));
@@ -50,7 +51,6 @@ public class Main {
             taskManager.runTasks(breedingExecutor,
                     TaskHandler.assignTasks(Stage.BREEDING, entityConfig.getAnimals(), setup::breedAnimals));
             setup.printStatistics(taskManager.runTask(resetExecutor, new Task(Stage.REMOVING, setup::updateAnimals)), days++);
-            entities = setup.getStatisticsHandler().getAnimalsTotal();
         }
         taskManager.shutdownAll();
     }

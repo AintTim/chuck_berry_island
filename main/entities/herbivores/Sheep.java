@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @NoArgsConstructor
 public class Sheep extends Herbivore {
     private static final AtomicLong counter = new AtomicLong(0);
+
     public Sheep(Entity animal) {
         super(animal.getWeight(), animal.getVelocity(), animal.getLimit(), animal.getHunger(), animal.getPicture());
         this.id = animal.getId();

@@ -4,7 +4,8 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Announcements {
-    public final String DAY_COUNTER = "=========== %s День %s ==========%n%n";
+    public final String DAY_COUNTER = "=========== %s День %s (%s) ==========%n%n";
+    public final String LINE_SPLITTER = "=================================\n";
     public final String ANIMALS_COUNTER = "Всего животных - %s%n";
     public final String ANIMAL_COUNTER = "всего:";
     public final String BIRTH_COUNTER = "Всего родилось на острове - %s%n";
@@ -19,8 +20,12 @@ public class Announcements {
     public final String REMAINING_PLANTS = "%s Осталось: %s%n";
     public final String CURRENT_SETUP = "⚙️ Текущие настройки симуляции:";
     public final String ISLAND_SQUARE = "\t\uD83D\uDFE9 Общая площадь - %d (%d:%d)%n";
-    public final String ISLAND_LIFESPAN = "\t⌛ Продолжительность симуляции - %d дней%n";
-    public final String ANIMAL_HEALTH = "\t❤ Начальное здоровье - %d%n";
-    public final String ANIMAL_HEALTH_RECOVER = "\t\uD83D\uDD3A Восстановление здоровья, когда животное сыто - %d%n";
-    public final String ANIMAL_HEALTH_REDUCTION = "\t\uD83D\uDD3B Уменьшение здоровья, когда животное голодно - %d%n";
+    public final String KEEP_CURRENT_SETTINGS = "Желаете сохранить текущие настройки?\nВведите что-нибудь для изменения настроек";
+    public final String SETTINGS_LIST = "Доступные параметры: ";
+    public final String INVALID_SETTING = "Выбранный параметр %s отсутствует в списке доступных.\nПожалуйста, выберите существующую настройку:\n";
+    public final String INVALID_VALUE = "Новое значение должно являться числом";
+    public final String CHANGE_SETTINGS = "Для изменения настройки введите название желаемого параметра: ";
+    public final String SET_SETTING_VALUE = "Введите новое значение для параметра %s (текущее значение - %d):\n";
+    public final String KEEP_CHANGING_SETTINGS = "Продолжить изменения настроек?\nY/N";
+    public final String RUN_SIMULATION_DEFAULT_SETTINGS = "Запускаем симуляцию с текущими настройками";
 }

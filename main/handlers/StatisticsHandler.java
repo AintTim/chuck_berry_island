@@ -8,32 +8,33 @@ import entities.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 public class StatisticsHandler {
-    private static final String PAW = "\uD83D\uDC3E";
-    private static final String COFFIN = "⚰️";
-    private static final String DAY = "\uD83D\uDCC5";
-
-    @Setter
-    private int currentDay;
     private final EntityConfig config;
     private final ConcurrentMap<EntityType, Integer> total;
     private final ConcurrentMap<EntityType, Integer> born;
     private final ConcurrentMap<EntityType, Integer> dead;
     private final ConcurrentMap<EntityType, Integer> animalsEaten;
     private final ConcurrentMap<EntityType, Integer> plantsEaten;
+    private final ConcurrentMap<EntityType, Integer> relocated;
     private final AtomicLong plantsEatenNumber;
     private final AtomicLong plantsGrown;
-    private final ConcurrentMap<EntityType, Integer> relocated;
+    @Setter
+    private int currentDay;
+    @Setter
+    private Instant start;
+    @Setter
+    private Instant end;
 
     public StatisticsHandler(EntityConfig config) {
         this.total = new ConcurrentHashMap<>();
@@ -64,7 +65,7 @@ public class StatisticsHandler {
         if (Objects.isNull(plantsEaten.get(type))) {
             plantsEaten.put(type, value);
         } else {
-            plantsEaten.computeIfPresent(type, (e,v) -> Integer.sum(v, value));
+            plantsEaten.computeIfPresent(type, (e, v) -> Integer.sum(v, value));
         }
     }
 
@@ -72,9 +73,12 @@ public class StatisticsHandler {
         while (!result.isDone()) {
             Thread.sleep(500);
         }
-        System.out.printf(Announcements.DAY_COUNTER, DAY, currentDay);
-        printAnimalInfo(PAW);
-        printDeadAnimalInfo(COFFIN);
+        String paw = "\uD83D\uDC3E";
+        String coffin = "⚰️";
+        String day = "\uD83D\uDCC5";
+        System.out.printf(Announcements.DAY_COUNTER, day, currentDay, getDayDuration());
+        printAnimalInfo(paw);
+        printDeadAnimalInfo(coffin);
         printPlantInfo(getPicture(EntityType.GRASS), count(total, true));
     }
 
@@ -87,12 +91,19 @@ public class StatisticsHandler {
         }
     }
 
-    public Integer getAnimalsTotal() {
-        return count(total, false);
+    private String getDayDuration() {
+        Duration duration = Duration.between(start, end);
+        if (duration.toMinutes() > 0) {
+            return String.format("%s min", duration.toMinutes());
+        } else if (duration.toSeconds() > 0) {
+            return String.format("%s sec", duration.toSeconds());
+        } else {
+            return String.format("%s ms", duration.toMillis());
+        }
     }
 
     private String getPicture(EntityType type) {
-        return ((Entity)config.getTemplate(type)).getPicture();
+        return ((Entity) config.getTemplate(type)).getPicture();
     }
 
     private void printPlantInfo(String linePicture, int grassAmount) {

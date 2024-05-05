@@ -24,6 +24,7 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
     protected Action action;
     protected int health;
     protected Double saturation;
+
     protected Animal(Double weight, Integer velocity, Integer limit, Double hunger, String picture) {
         super(weight, velocity, limit, hunger, picture);
         this.action = Action.IDLE;

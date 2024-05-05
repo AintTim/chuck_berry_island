@@ -26,7 +26,7 @@ public class ActionHandler {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         Field field = island.locateEntity(animal);
         if (canBreed(animal, field)) {
-            if (canEat(animal,field)) {
+            if (canEat(animal, field)) {
                 animal.setAction(Action.values()[random.nextInt(3)]);
             } else {
                 animal.setAction(Action.values()[random.nextInt(1, 3)]);
@@ -66,6 +66,4 @@ public class ActionHandler {
                 .filter(condition)
                 .toList();
     }
-
-
 }

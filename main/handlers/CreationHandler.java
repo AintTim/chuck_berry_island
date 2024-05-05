@@ -29,10 +29,10 @@ public class CreationHandler {
                 .toList();
     }
 
-    public void fillIslandWithRandomEntities(Island island) {
+    public void fillIslandWithEntities(Island island) {
         for (var field : island.getFields().entrySet()) {
             entityConfig.getTemplates().forEach((type, template) -> {
-                int number = ThreadLocalRandom.current().nextInt(((Entity)template).getLimit());
+                int number = ThreadLocalRandom.current().nextInt(((Entity) template).getLimit());
                 field.getValue().put(type, new ArrayList<>(createEntities(type, number)));
             });
         }

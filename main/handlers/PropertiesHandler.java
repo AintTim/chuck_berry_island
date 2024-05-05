@@ -25,12 +25,12 @@ public class PropertiesHandler {
         try (BufferedReader reader = new BufferedReader(new FileReader(path.toString()))) {
             properties.load(reader);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(String.format("Невозможно прочитать указанный файл - %s", path));
         }
     }
 
     public Integer getNumberProperty(String name) {
-        return Integer.parseInt( properties.getProperty(name));
+        return Integer.parseInt(properties.getProperty(name));
     }
 
     public Path getPath(String name) {

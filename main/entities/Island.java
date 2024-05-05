@@ -2,7 +2,6 @@ package entities;
 
 import configs.EntityConfig;
 import configs.IslandConfig;
-import configs.SetupConfig;
 import constants.Action;
 import constants.EntityType;
 import handlers.StatisticsHandler;
@@ -27,6 +26,14 @@ public class Island implements ManageEntityService {
         this.config = island;
         this.entityConfig = entity;
         this.statistics = statistics;
+    }
+
+    private static void initFields(IslandConfig config, Map<Field, EnumMap<EntityType, List<Entity>>> fields) {
+        for (int x = 0; x < config.getWidth(); x++) {
+            for (int y = 0; y < config.getHeight(); y++) {
+                fields.put(new Field(x, y), new EnumMap<>(EntityType.class));
+            }
+        }
     }
 
     @Override
@@ -55,12 +62,10 @@ public class Island implements ManageEntityService {
 
     @Override
     public synchronized void countEntities() {
-        System.out.println("Подсчитываем сущности...");
         for (var field : fields.entrySet()) {
             field.getValue().forEach((type, list) ->
                     list.forEach(entity -> statistics.getTotal().merge(type, 1, Integer::sum)));
         }
-        System.out.println("Сущности подсчитаны");
     }
 
     @Override
@@ -103,14 +108,6 @@ public class Island implements ManageEntityService {
             }
         }
         throw new IllegalArgumentException("Искомая сущность отсутствует на острове");
-    }
-
-    private static void initFields(IslandConfig config, Map<Field, EnumMap<EntityType, List<Entity>>> fields) {
-        for (int x = 0; x < config.getWidth(); x++) {
-            for (int y = 0; y < config.getHeight(); y++) {
-                fields.put(new Field(x, y), new EnumMap<>(EntityType.class));
-            }
-        }
     }
 
     private void breedAnimal(Field location, Animal animal, UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring) {
@@ -208,7 +205,7 @@ public class Island implements ManageEntityService {
         }
     }
 
-    private <T extends Entity> Stream<T> getEntitiesOfType(Stream<Map.Entry<EntityType,List<Entity>>> stream, EntityType type, Class<T> clazz) {
+    private <T extends Entity> Stream<T> getEntitiesOfType(Stream<Map.Entry<EntityType, List<Entity>>> stream, EntityType type, Class<T> clazz) {
         return stream
                 .filter(map -> map.getKey().equals(type))
                 .map(Map.Entry::getValue)

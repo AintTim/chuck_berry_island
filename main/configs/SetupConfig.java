@@ -5,6 +5,7 @@ import entities.Island;
 import handlers.*;
 import lombok.Getter;
 
+import java.time.Instant;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -29,13 +30,12 @@ public class SetupConfig {
     }
 
     public void init() {
-        System.out.println("Заполняем остров...");
-        creationHandler.fillIslandWithRandomEntities(island);
-        System.out.println("Остров заполнен");
+        creationHandler.fillIslandWithEntities(island);
     }
 
     public void printStatistics(Future<Task> updateAnimals, int currentDay) {
         statisticsHandler.setCurrentDay(currentDay);
+        statisticsHandler.setEnd(Instant.now());
         try {
             statisticsHandler.printStatistics(updateAnimals);
         } catch (InterruptedException e) {
@@ -45,6 +45,7 @@ public class SetupConfig {
     }
 
     public void resetStatistics() {
+        statisticsHandler.setStart(Instant.now());
         statisticsHandler.clearStats();
     }
 
@@ -53,27 +54,19 @@ public class SetupConfig {
     }
 
     public void feedAnimals(EntityType type) {
-        System.out.println("Кормим животных...");
         island.feedAnimals(type, eatingHandler::feedAnimal);
-        System.out.println("Животные накормлены");
     }
 
     public void breedAnimals(EntityType type) {
-        System.out.println("Разводим животных...");
         island.breedAnimals(type, breedingHandler::getRandomBreedingPartner, creationHandler::createEntity);
-        System.out.println("Животные расплодились");
     }
 
     public void moveAnimals(EntityType type) {
-        System.out.println("Перемещаем животных...");
         island.moveAnimals(type, movementHandler::moveEntity);
-        System.out.println("Животные перемещены");
     }
 
     public void updatePlants() {
-        System.out.println("Выращиваем растения...");
         island.refillPlants(diff -> creationHandler.createEntities(EntityType.GRASS, ThreadLocalRandom.current().nextInt(diff)));
-        System.out.println("Растения выращены");
     }
 
     public void updateAnimals() {

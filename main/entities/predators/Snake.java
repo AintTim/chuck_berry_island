@@ -3,7 +3,6 @@ package entities.predators;
 import entities.Animal;
 import entities.Entity;
 import lombok.NoArgsConstructor;
-import services.CreatorService;
 
 import java.util.concurrent.atomic.AtomicLong;
 

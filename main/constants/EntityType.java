@@ -10,25 +10,23 @@ import entities.predators.*;
 import java.util.Arrays;
 
 public enum EntityType {
-    BEAR("bear", Bear.class),
-    CATERPILLAR("caterpillar", Caterpillar.class),
-    DEER("deer", Deer.class),
-    DUCK("duck", Duck.class),
-    EAGLE("eagle", Eagle.class),
-    FOX("fox", Fox.class),
-    GRASS("grass", Grass.class),
-    HORSE("horse", Horse.class),
-    MOUSE("mouse", Mouse.class),
-    RABBIT("rabbit", Rabbit.class),
-    SHEEP("sheep", Sheep.class),
-    SNAKE("snake", Snake.class),
-    WOLF("wolf",Wolf.class);
+    BEAR(Bear.class),
+    CATERPILLAR(Caterpillar.class),
+    DEER(Deer.class),
+    DUCK(Duck.class),
+    EAGLE(Eagle.class),
+    FOX(Fox.class),
+    GRASS(Grass.class),
+    HORSE(Horse.class),
+    MOUSE(Mouse.class),
+    RABBIT(Rabbit.class),
+    SHEEP(Sheep.class),
+    SNAKE(Snake.class),
+    WOLF(Wolf.class);
 
-    private final String name;
     private final Class<? extends Entity> clazz;
 
-    EntityType(String name, Class<? extends Entity> clazz) {
-        this.name = name;
+    EntityType(Class<? extends Entity> clazz) {
         this.clazz = clazz;
     }
 

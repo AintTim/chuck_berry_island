@@ -7,7 +7,6 @@ import lombok.Getter;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Getter
 public class Task implements Callable<Task> {
@@ -30,14 +29,12 @@ public class Task implements Callable<Task> {
     }
 
     @Override
-    public Task call() throws Exception {
-        var start = System.currentTimeMillis();
+    public Task call() {
         if (Objects.nonNull(consumer)) {
             consumer.accept(type);
         } else {
             runnable.run();
         }
-//        System.out.printf("%s: %s подготовлен за %d%n", stage, type, System.currentTimeMillis() - start);
         return this;
     }
 }

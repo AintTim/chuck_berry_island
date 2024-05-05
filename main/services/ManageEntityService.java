@@ -1,6 +1,5 @@
 package services;
 
-import configs.SetupConfig;
 import constants.EntityType;
 import entities.Animal;
 import entities.Entity;
@@ -17,6 +16,5 @@ public interface ManageEntityService {
     void prepareAnimals(EntityType type, Consumer<Animal> prepare);
     void breedAnimals(EntityType type, UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring);
     void countEntities();
-
     Field locateEntity(Entity entity);
 }
