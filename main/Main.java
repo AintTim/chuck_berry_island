@@ -42,14 +42,10 @@ public class Main {
             setup.resetStatistics();
             setup.getIsland().countEntities();
             taskManager.runTask(plantsExecutor, new Task(Stage.PLANTING, setup::updatePlants));
-            taskManager.runTasks(preparationExecutor,
-                    TaskHandler.assignTasks(Stage.PREPARE, entityConfig.getAnimals(), setup::prepareAnimals));
-            taskManager.runTasks(movementExecutor,
-                    TaskHandler.assignTasks(Stage.MOVING, entityConfig.getAnimals(), setup::moveAnimals));
-            taskManager.runTasks(feedExecutor,
-                    TaskHandler.assignTasks(Stage.EATING, entityConfig.getAnimals(), setup::feedAnimals));
-            taskManager.runTasks(breedingExecutor,
-                    TaskHandler.assignTasks(Stage.BREEDING, entityConfig.getAnimals(), setup::breedAnimals));
+            taskManager.runTasks(preparationExecutor, TaskHandler.assignTasks(Stage.PREPARE, entityConfig.getAnimals(), setup::prepareAnimals));
+            taskManager.runTasks(movementExecutor, TaskHandler.assignTasks(Stage.MOVING, entityConfig.getAnimals(), setup::moveAnimals));
+            taskManager.runTasks(feedExecutor, TaskHandler.assignTasks(Stage.EATING, entityConfig.getAnimals(), setup::feedAnimals));
+            taskManager.runTasks(breedingExecutor, TaskHandler.assignTasks(Stage.BREEDING, entityConfig.getAnimals(), setup::breedAnimals));
             setup.printStatistics(taskManager.runTask(resetExecutor, new Task(Stage.REMOVING, setup::updateAnimals)), days++);
         }
         taskManager.shutdownAll();
