@@ -29,11 +29,11 @@ public class PropertiesHandler {
         }
     }
 
-    public <T> T getProperty(String name, Class<T> clazz) {
-        return clazz.cast(properties.get(name));
+    public Integer getNumberProperty(String name) {
+        return Integer.parseInt( properties.getProperty(name));
     }
 
     public Path getPath(String name) {
-        return Path.of(getProperty(name, String.class));
+        return Path.of(properties.getProperty(name));
     }
 }

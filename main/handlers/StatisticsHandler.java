@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
@@ -45,7 +47,7 @@ public class StatisticsHandler {
         this.config = config;
     }
 
-    public void clearStats() {
+    public synchronized void clearStats() {
         total.clear();
         born.clear();
         dead.clear();
@@ -56,7 +58,7 @@ public class StatisticsHandler {
         relocated.clear();
     }
 
-    public void updatePlantStat(Animal animal, int value) {
+    public synchronized void updatePlantStat(Animal animal, int value) {
         EntityType type = EntityType.ofClass(animal.getClass());
         plantsEatenNumber.addAndGet(value);
         if (Objects.isNull(plantsEaten.get(type))) {
@@ -66,12 +68,14 @@ public class StatisticsHandler {
         }
     }
 
-    public boolean printStatistics() {
+    public synchronized void printStatistics(Future<Task> result) throws InterruptedException {
+        while (!result.isDone()) {
+            Thread.sleep(500);
+        }
         System.out.printf(Announcements.DAY_COUNTER, DAY, currentDay);
-        boolean presentedAnimals = printAnimalInfo(PAW);
-        boolean presentedDeadAnimals = printDeadAnimalInfo(COFFIN);
-        boolean presentedPlants = printPlantInfo(getPicture(EntityType.GRASS), count(total, true));
-        return presentedAnimals && presentedDeadAnimals && presentedPlants;
+        printAnimalInfo(PAW);
+        printDeadAnimalInfo(COFFIN);
+        printPlantInfo(getPicture(EntityType.GRASS), count(total, true));
     }
 
     public boolean countDead(Entity animal) {
@@ -86,11 +90,12 @@ public class StatisticsHandler {
     public Integer getAnimalsTotal() {
         return count(total, false);
     }
+
     private String getPicture(EntityType type) {
         return ((Entity)config.getTemplate(type)).getPicture();
     }
 
-    private boolean printPlantInfo(String linePicture, int grassAmount) {
+    private void printPlantInfo(String linePicture, int grassAmount) {
         printLine(linePicture);
         System.out.printf(Announcements.DAY_START, getPicture(EntityType.GRASS), grassAmount);
         System.out.printf(Announcements.GROWN_PLANTS, getPicture(EntityType.GRASS), plantsGrown.get());
@@ -99,26 +104,23 @@ public class StatisticsHandler {
         System.out.println();
         print(plantsEaten, Announcements.PLANT_EATERS_COUNTER);
         printLine(linePicture);
-        return true;
     }
 
-    private boolean printDeadAnimalInfo(String linePicture) {
+    private void printDeadAnimalInfo(String linePicture) {
         printLine(linePicture);
         System.out.printf(Announcements.DEATH_COUNTER, (count(dead) + count(animalsEaten)));
         print(dead, Announcements.DEAD_COUNTER);
         print(animalsEaten, Announcements.EATEN_COUNTER);
         printLine(linePicture);
-        return true;
     }
 
-    private boolean printAnimalInfo(String linePicture) {
+    private void printAnimalInfo(String linePicture) {
         printLine(linePicture);
         System.out.printf(Announcements.ANIMALS_COUNTER, count(total, false));
         print(total, Announcements.ANIMAL_COUNTER);
         System.out.printf(Announcements.BIRTH_COUNTER, count(born));
         print(born, Announcements.BORN_COUNTER);
         printLine(linePicture);
-        return true;
     }
 
     private void printLine(String picture) {

@@ -17,4 +17,10 @@ public class Announcements {
     public final String GROWN_PLANTS = "%s Выращено: %s%n";
     public final String EATEN_PLANTS = "%s Съедено: %s%n";
     public final String REMAINING_PLANTS = "%s Осталось: %s%n";
+    public final String CURRENT_SETUP = "⚙️ Текущие настройки симуляции:";
+    public final String ISLAND_SQUARE = "\t\uD83D\uDFE9 Общая площадь - %d (%d:%d)%n";
+    public final String ISLAND_LIFESPAN = "\t⌛ Продолжительность симуляции - %d дней%n";
+    public final String ANIMAL_HEALTH = "\t❤ Начальное здоровье - %d%n";
+    public final String ANIMAL_HEALTH_RECOVER = "\t\uD83D\uDD3A Восстановление здоровья, когда животное сыто - %d%n";
+    public final String ANIMAL_HEALTH_REDUCTION = "\t\uD83D\uDD3B Уменьшение здоровья, когда животное голодно - %d%n";
 }

@@ -1,45 +1,35 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
-import configs.EatingProbabilityConfig;
-import configs.EntityConfig;
-import configs.EntityTemplateConfig;
-import configs.IslandConfig;
-import constants.EntityType;
+import configs.*;
 import constants.Stage;
-import entities.Island;
-import handlers.*;
+import handlers.ConsoleHandler;
+import handlers.PropertiesHandler;
+import handlers.Task;
+import handlers.TaskHandler;
 
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    public static void main(String[] args) {
         Path generalPropertiesPath = Path.of("resources/general.properties");
         var propertiesHandler = new PropertiesHandler(generalPropertiesPath);
-
         var eatingProbabilityConfig = new EatingProbabilityConfig(propertiesHandler.getPath("probability.path"), new ObjectMapper());
         var templateConfig = new EntityTemplateConfig(propertiesHandler.getPath("template.path"), new ObjectMapper());
 
+        ConsoleHandler console = new ConsoleHandler(new Scanner(System.in), propertiesHandler);
+        console.presentOptions();
         EntityConfig entityConfig = new EntityConfig(eatingProbabilityConfig, templateConfig, propertiesHandler.getProperties());
         IslandConfig config = new IslandConfig(propertiesHandler.getProperties());
+        SetupConfig setup = new SetupConfig(entityConfig, config);
 
-        CreationHandler creator = new CreationHandler(entityConfig);
-        StatisticsHandler statistics = new StatisticsHandler(entityConfig);
-        Island island = new Island(config, entityConfig, statistics);
-        ActionHandler actionManager = new ActionHandler(island, entityConfig);
-        MovementHandler movementManager = new MovementHandler(island);
-        EatingHandler eatingManager = new EatingHandler(island, entityConfig);
-        BreedingHandler breedingManager = new BreedingHandler(island, entityConfig);
-        TaskHandler taskManager = new TaskHandler();
+        setup.init();
 
-        //Заполнение острова сущностями (животные + растения)
-        creator.fillIslandWithRandomEntities(island);
 
         int days = 1;
         Integer entities = Integer.MAX_VALUE;
+        TaskHandler taskManager = new TaskHandler();
         ExecutorService plantsExecutor = Executors.newSingleThreadExecutor();
         ExecutorService preparationExecutor = Executors.newCachedThreadPool();
         ExecutorService movementExecutor = Executors.newFixedThreadPool(12);
@@ -47,47 +37,21 @@ public class Main {
         ExecutorService breedingExecutor = Executors.newFixedThreadPool(12);
         ExecutorService resetExecutor = Executors.newSingleThreadExecutor();
 
-        while (entities != 0) {
-            statistics.clearStats();
-            //Подсчитываем общее количество сущностей
-            island.countEntities();
-            //Выращивание растений
-            taskManager.runTask(plantsExecutor, new Task(Stage.PLANTING,
-                    () -> island.refillPlants(diff -> creator.createEntities(EntityType.GRASS, ThreadLocalRandom.current().nextInt(diff)))));
-            //Выбор действия на раунд
+        while (days < 11) {
+            setup.resetStatistics();
+            setup.getIsland().countEntities();
+            taskManager.runTask(plantsExecutor, new Task(Stage.PLANTING, setup::updatePlants));
             taskManager.runTasks(preparationExecutor,
-                    TaskHandler.assignTasks(Stage.PREPARE, entityConfig.getAnimals(), type -> island.prepareAnimals(type, actionManager::setRandomAction)));
-            //Перемещение сущности
+                    TaskHandler.assignTasks(Stage.PREPARE, entityConfig.getAnimals(), setup::prepareAnimals));
             taskManager.runTasks(movementExecutor,
-                    TaskHandler.assignTasks(Stage.MOVING, entityConfig.getAnimals(), type -> island.moveAnimals(type, movementManager::moveEntity)));
+                    TaskHandler.assignTasks(Stage.MOVING, entityConfig.getAnimals(), setup::moveAnimals));
             taskManager.runTasks(feedExecutor,
-                    TaskHandler.assignTasks(Stage.EATING, entityConfig.getAnimals(), type -> island.feedAnimals(type, eatingManager::feedAnimal)));
+                    TaskHandler.assignTasks(Stage.EATING, entityConfig.getAnimals(), setup::feedAnimals));
             taskManager.runTasks(breedingExecutor,
-                    TaskHandler.assignTasks(Stage.BREEDING, entityConfig.getAnimals(), type -> island.breedAnimals(type, breedingManager::getRandomBreedingPartner, creator::createEntity)));
-            //Удаление умерших животных
-            island.resetEntities(statistics::countDead);
-            statistics.setCurrentDay(days++);
-            statistics.printStatistics();
-            entities = statistics.getAnimalsTotal();
+                    TaskHandler.assignTasks(Stage.BREEDING, entityConfig.getAnimals(), setup::breedAnimals));
+            setup.printStatistics(taskManager.runTask(resetExecutor, new Task(Stage.REMOVING, setup::updateAnimals)), days++);
+            entities = setup.getStatisticsHandler().getAnimalsTotal();
         }
         taskManager.shutdownAll();
-
-//        statistics.clearStats();
-//        island.countEntities();
-//        island.refillPlants(diff -> creator.createEntities(EntityType.GRASS, ThreadLocalRandom.current().nextInt(diff)));
-//        island.prepareAnimals(actionManager::setRandomAction);
-//        island.moveAnimals(movementManager::moveEntity);
-//        island.feedAnimals(eatingManager::feedAnimal);
-//        island.breedAnimals(breedingManager::getRandomBreedingPartner, creator::createEntity);
-//        island.resetEntities(entity -> {
-//            if (Boolean.TRUE.equals(entity.getRemovable())) {
-//                statistics.getDead().merge(EntityType.ofClass(entity.getClass()), 1, Integer::sum);
-//                return true;
-//            }
-//            return false;
-//        });
-//        statistics.setCurrentDay(days);
-//        statistics.printStatistics();
-        System.out.println("Итог");
     }
 }

@@ -2,6 +2,7 @@ package entities;
 
 import configs.EntityConfig;
 import configs.IslandConfig;
+import configs.SetupConfig;
 import constants.Action;
 import constants.EntityType;
 import handlers.StatisticsHandler;
@@ -28,78 +29,16 @@ public class Island implements ManageEntityService {
         this.statistics = statistics;
     }
 
-    //убрать мертвых животных - Статистика по умершим животным
     @Override
-    public void resetEntities(Predicate<Entity> condition) {
+    public synchronized void resetEntities(Predicate<Entity> condition) {
         fields.values().stream().flatMap(map -> map.values().stream())
                 .forEach(list -> list.removeIf(condition));
     }
 
-    //восполнить растения
     @Override
     public synchronized void refillPlants(IntFunction<List<Entity>> createPlant) {
-
         fields.values().forEach(map -> fillWithRandomNumberOfPlants(createPlant, map));
-        System.out.println("Plants are refilled");
     }
-
-//    @Override
-//    public void moveAnimals(Function<Animal, Field> relocate) {
-//        Predicate<Animal> isMoving = animal -> Action.MOVE.equals(animal.getAction()) && !animal.getRemovable();
-//
-//        for (var field : fields.entrySet()) {
-//            field.getValue().values().stream()
-//                    .flatMap(Collection::stream)
-//                    .filter(Animal.class::isInstance)
-//                    .map(Animal.class::cast)
-//                    .filter(isMoving)
-//                    .forEach(animal -> moveAnimal(field.getKey(), animal, relocate));
-//        }
-//    }
-
-    @Override
-    public void moveAnimals(EntityType type, Function<Animal, Field> relocate) {
-        Predicate<Animal> isMoving = animal -> Action.MOVE.equals(animal.getAction()) && !animal.getRemovable();
-        for (var field : fields.entrySet()) {
-            getEntitiesOfType(field.getValue().entrySet().stream(), type, Animal.class)
-                    .filter(isMoving)
-                    .forEach(animal -> moveAnimal(field.getKey(), animal, relocate));
-        }
-    }
-
-//    @Override
-//    public void feedAnimals(Function<Animal, List<Entity>> eat) {
-//        Predicate<Animal> isEating = animal -> Action.EAT.equals(animal.getAction());
-//
-//        for (var field : fields.entrySet()) {
-//            field.getValue().values().stream()
-//                    .flatMap(Collection::stream)
-//                    .filter(Animal.class::isInstance)
-//                    .map(Animal.class::cast)
-//                    .filter(isEating)
-//                    .forEach(animal -> eatEntity(field.getKey(), animal, eat));
-//        }
-//    }
-
-    @Override
-    public void feedAnimals(EntityType type, Function<Animal, List<Entity>> eat) {
-        Predicate<Animal> isEating = animal -> Action.EAT.equals(animal.getAction()) && !animal.getRemovable();
-        for (var field : fields.entrySet()) {
-            getEntitiesOfType(field.getValue().entrySet().stream(), type, Animal.class)
-                    .filter(isEating)
-                    .forEach(animal -> eatEntity(field.getKey(), animal, eat));
-        }
-    }
-
-//    @Override
-//    public void prepareAnimals(Consumer<Animal> prepare) {
-//        for (var field : fields.entrySet()) {
-//            field.getValue().values().stream().flatMap(Collection::stream)
-//                    .filter(Animal.class::isInstance)
-//                    .map(Animal.class::cast)
-//                    .forEach(prepare);
-//        }
-//    }
 
     @Override
     public synchronized void prepareAnimals(EntityType type, Consumer<Animal> prepare) {
@@ -115,6 +54,36 @@ public class Island implements ManageEntityService {
     }
 
     @Override
+    public synchronized void countEntities() {
+        System.out.println("Подсчитываем сущности...");
+        for (var field : fields.entrySet()) {
+            field.getValue().forEach((type, list) ->
+                    list.forEach(entity -> statistics.getTotal().merge(type, 1, Integer::sum)));
+        }
+        System.out.println("Сущности подсчитаны");
+    }
+
+    @Override
+    public void moveAnimals(EntityType type, Function<Animal, Field> relocate) {
+        Predicate<Animal> isMoving = animal -> Action.MOVE.equals(animal.getAction()) && !animal.getRemovable();
+        for (var field : fields.entrySet()) {
+            getEntitiesOfType(field.getValue().entrySet().stream(), type, Animal.class)
+                    .filter(isMoving)
+                    .forEach(animal -> moveAnimal(field.getKey(), animal, relocate));
+        }
+    }
+
+    @Override
+    public void feedAnimals(EntityType type, Function<Animal, List<Entity>> eat) {
+        Predicate<Animal> isEating = animal -> Action.EAT.equals(animal.getAction()) && !animal.getRemovable();
+        for (var field : fields.entrySet()) {
+            getEntitiesOfType(field.getValue().entrySet().stream(), type, Animal.class)
+                    .filter(isEating)
+                    .forEach(animal -> eatEntity(field.getKey(), animal, eat));
+        }
+    }
+
+    @Override
     public void breedAnimals(EntityType type, UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring) {
         Predicate<Animal> isBreeding = animal -> Action.BREED.equals(animal.getAction()) && !animal.getRemovable();
         for (var field : fields.entrySet()) {
@@ -124,28 +93,7 @@ public class Island implements ManageEntityService {
         }
     }
 
-//    @Override
-//    public void breedAnimals(UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring) {
-//        Predicate<Animal> isBreeding = animal -> Action.BREED.equals(animal.getAction());
-//
-//        for (var field : fields.entrySet()) {
-//            field.getValue().values().stream()
-//                    .flatMap(Collection::stream)
-//                    .filter(Animal.class::isInstance)
-//                    .map(Animal.class::cast)
-//                    .filter(isBreeding)
-//                    .forEach(animal -> breedAnimal(field.getKey(), animal, breed, createOffspring));
-//        }
-//    }
-
-    public synchronized void countEntities() {
-        for (var field : fields.entrySet()) {
-            field.getValue().forEach((type, list) ->
-                    list.forEach(entity -> statistics.getTotal().merge(type, 1, Integer::sum)));
-        }
-        System.out.println("Entities are calculated!");
-    }
-
+    @Override
     public Field locateEntity(Entity entity) {
         for (var field : fields.entrySet()) {
             var fieldMap = field.getValue();
