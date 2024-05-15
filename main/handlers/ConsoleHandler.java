@@ -2,6 +2,7 @@ package handlers;
 
 import configs.Announcements;
 import constants.Setting;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -9,14 +10,10 @@ import java.util.Scanner;
 
 import static constants.Setting.*;
 
+@RequiredArgsConstructor
 public class ConsoleHandler {
     private final Scanner scanner;
     private final PropertiesHandler properties;
-
-    public ConsoleHandler(Scanner scanner, PropertiesHandler propertiesHandler) {
-        this.scanner = scanner;
-        this.properties = propertiesHandler;
-    }
 
     public void printCurrentSettings() {
         announce(Announcements.CURRENT_SETUP);

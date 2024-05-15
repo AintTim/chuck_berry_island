@@ -28,7 +28,7 @@ public class Island implements ManageEntityService {
         this.statistics = statistics;
     }
 
-    private static void initFields(IslandConfig config, Map<Field, EnumMap<EntityType, List<Entity>>> fields) {
+    private void initFields(IslandConfig config, Map<Field, EnumMap<EntityType, List<Entity>>> fields) {
         for (int x = 0; x < config.getWidth(); x++) {
             for (int y = 0; y < config.getHeight(); y++) {
                 fields.put(new Field(x, y), new EnumMap<>(EntityType.class));
@@ -111,11 +111,11 @@ public class Island implements ManageEntityService {
     }
 
     private void breedAnimal(Field location, Animal animal, UnaryOperator<Animal> breed, Function<EntityType, Entity> createOffspring) {
-        Animal partner = breed.apply(animal);
+        var partner = breed.apply(animal);
         if (Objects.nonNull(partner)) {
             updateAnimalStatus(partner, true);
-            EntityType type = EntityType.ofClass(animal.getClass());
-            List<Entity> animals = fields.get(location).get(type);
+            var type = EntityType.ofClass(animal.getClass());
+            var animals = fields.get(location).get(type);
             if (animals.size() + 1 <= animal.getLimit()) {
                 var offspring = createOffspring.apply(type);
                 animal.breed(partner);
@@ -129,18 +129,18 @@ public class Island implements ManageEntityService {
     }
 
     private void moveAnimal(Field start, Animal animal, Function<Animal, Field> relocate) {
-        Field destination = relocate.apply(animal);
+        var destination = relocate.apply(animal);
         updateAnimalStatus(animal, true);
         if (!start.equals(destination)) {
             removeEntity(start, animal);
-            EntityType type = EntityType.ofClass(animal.getClass());
+            var type = EntityType.ofClass(animal.getClass());
             fields.get(destination).get(type).add(animal);
             statistics.getRelocated().merge(type, 1, Integer::sum);
         }
     }
 
     private void eatEntity(Field location, Animal attacker, Function<Animal, List<Entity>> eat) {
-        List<Entity> prey = eat.apply(attacker);
+        var prey = eat.apply(attacker);
         if (prey.isEmpty()) {
             updateAnimalStatus(attacker, true);
             return;
@@ -153,7 +153,7 @@ public class Island implements ManageEntityService {
     }
 
     private void eatMultipleEntities(Field location, Animal attacker, List<Entity> preys) {
-        List<Entity> eatenGrass = new ArrayList<>();
+        var eatenGrass = new ArrayList<>();
         preys.forEach(grass -> {
             if (removeEntity(location, grass)) {
                 eatenGrass.add(grass);
@@ -179,8 +179,8 @@ public class Island implements ManageEntityService {
     }
 
     private synchronized void fillWithRandomNumberOfPlants(IntFunction<List<Entity>> createPlant, EnumMap<EntityType, List<Entity>> map) {
-        List<Entity> plants = map.get(EntityType.GRASS);
-        Entity grass = (Entity) entityConfig.getTemplate(EntityType.GRASS);
+        var plants = map.get(EntityType.GRASS);
+        var grass = (Entity) entityConfig.getTemplate(EntityType.GRASS);
         int difference = grass.getLimit() - plants.size();
         if (difference > 0) {
             var newPlants = createPlant.apply(difference);
@@ -190,7 +190,7 @@ public class Island implements ManageEntityService {
     }
 
     private synchronized boolean removeEntity(Field location, Entity entity) {
-        EntityType type = EntityType.ofClass(entity.getClass());
+        var type = EntityType.ofClass(entity.getClass());
         var updatedEntities = new ArrayList<>(fields.get(location).get(type));
         var isRemoved = updatedEntities.remove(entity);
         fields.get(location).put(type, updatedEntities);

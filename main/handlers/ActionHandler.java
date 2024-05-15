@@ -23,8 +23,8 @@ public class ActionHandler {
     }
 
     public void setRandomAction(Animal animal) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        Field field = island.locateEntity(animal);
+        var random = ThreadLocalRandom.current();
+        var field = island.locateEntity(animal);
         if (canBreed(animal, field)) {
             if (canEat(animal, field)) {
                 animal.setAction(Action.values()[random.nextInt(3)]);
@@ -59,7 +59,7 @@ public class ActionHandler {
     }
 
     private List<Animal> getBreedingNeighbors(Field field, Animal animal, Predicate<Animal> condition) {
-        EntityType type = EntityType.ofClass(animal.getClass());
+        var type = EntityType.ofClass(animal.getClass());
         return island.getFields().get(field).get(type).stream()
                 .map(Animal.class::cast)
                 .filter(a -> !a.equals(animal))

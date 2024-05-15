@@ -12,6 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EatingHandler {
     private final Island island;
     private final EntityConfig config;
+    private static final int PERCENTAGE_POSSIBILITY = 100;
+    private static final double REQUIRED_FOOD_RATIO = 0.75;
 
     public EatingHandler(Island island, EntityConfig config) {
         this.island = island;
@@ -30,7 +32,7 @@ public class EatingHandler {
     }
 
     private EntityType getPrey(Animal animal) {
-        int chance = ThreadLocalRandom.current().nextInt(config.getDefaultHealth() + 1);
+        int chance = ThreadLocalRandom.current().nextInt(PERCENTAGE_POSSIBILITY);
         var preys = config.getEatingProbability().getPreys(animal);
 
         Comparator<Map.Entry<EntityType, List<Entity>>> maxWeight = (type1, type2)
@@ -47,9 +49,9 @@ public class EatingHandler {
     private List<Entity> getPlants(EnumMap<EntityType, List<Entity>> location, Animal animal) {
         var grass = location.get(EntityType.GRASS);
         double requiredFoodAmount = animal.getHunger() - animal.getSaturation();
-        int number = (grass.size() < Math.ceil(requiredFoodAmount * 0.75))
+        int number = (grass.size() < Math.ceil(requiredFoodAmount * REQUIRED_FOOD_RATIO))
                 ? grass.size()
-                : (int) Math.ceil(requiredFoodAmount * 0.75);
+                : (int) Math.ceil(requiredFoodAmount * REQUIRED_FOOD_RATIO);
         return location.get(EntityType.GRASS).subList(0, number);
     }
 

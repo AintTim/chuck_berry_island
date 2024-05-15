@@ -26,7 +26,7 @@ public class SetupConfig {
         actionHandler = new ActionHandler(island, entityConfig);
         movementHandler = new MovementHandler(island);
         eatingHandler = new EatingHandler(island, entityConfig);
-        breedingHandler = new BreedingHandler(island, entityConfig);
+        breedingHandler = new BreedingHandler(island);
     }
 
     public void init() {

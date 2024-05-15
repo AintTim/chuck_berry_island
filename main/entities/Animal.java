@@ -55,7 +55,7 @@ public abstract class Animal extends Entity implements LivingBeing, CreatorServi
                 removable = true;
             }
         } else {
-            saturation -= Math.ceil(saturation / 5);
+            saturation -= Math.ceil(saturation / decrease * 100);
             if (saturation < 0) {
                 saturation = 0.0;
             }

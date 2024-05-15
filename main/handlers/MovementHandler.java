@@ -6,23 +6,21 @@ import entities.Animal;
 import entities.Entity;
 import entities.Field;
 import entities.Island;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
+@RequiredArgsConstructor
 public class MovementHandler {
     private final Island island;
 
-    public MovementHandler(Island island) {
-        this.island = island;
-    }
-
     public Field moveEntity(Animal entity) {
-        Field current = island.locateEntity(entity);
+        var current = island.locateEntity(entity);
         for (int move = 0; move < entity.getVelocity(); move++) {
-            List<Direction> possibleDirections = definePossibleDirections(current, entity);
+            var possibleDirections = definePossibleDirections(current, entity);
             current = move(current, entity, possibleDirections);
         }
         return current;

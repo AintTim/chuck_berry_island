@@ -1,18 +1,15 @@
 package entities;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode
+@AllArgsConstructor
 public class Field {
     private final int x;
     private final int y;
-
-    public Field(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
 
     @Override
     public String toString() {

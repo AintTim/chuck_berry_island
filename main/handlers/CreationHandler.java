@@ -4,7 +4,6 @@ import configs.EntityConfig;
 import constants.EntityType;
 import entities.Entity;
 import entities.Island;
-import services.CreatorService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public class CreationHandler {
     }
 
     public Entity createEntity(EntityType type) {
-        CreatorService<Entity, Entity> template = entityConfig.getTemplate(type);
+        var template = entityConfig.getTemplate(type);
         return template.create((Entity) template);
     }
 

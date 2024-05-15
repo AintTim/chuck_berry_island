@@ -21,7 +21,7 @@ public class EatingProbabilityConfig {
     }
 
     public List<EntityType> getPreys(Animal animal) {
-        EntityType type = EntityType.ofClass(animal.getClass());
+        var type = EntityType.ofClass(animal.getClass());
         return probabilities.get(type).entrySet().stream()
                 .filter(map -> map.getValue() > 0)
                 .map(Map.Entry::getKey)
